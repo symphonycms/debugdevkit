@@ -40,8 +40,7 @@
 			$item = $this->buildJumpItem(
 				$filename,
 				"?debug={$filename}" . $this->_query_string,
-				($this->_view == $filename),
-				"?debug-edit=" . $this->_pagedata['filelocation'] . $this->_query_string
+				($this->_view == $filename)
 			);
 			
 			$utilities = $this->__buildUtilityList($this->__findUtilitiesInXSL($this->_xsl), 1, $this->_view);
@@ -59,27 +58,6 @@
 			));
 			
 			$this->Body->appendChild($list);
-		}
-		
-		protected function buildJumpItem($name, $link, $active = false, $link_edit = null) {
-			$item = new XMLElement('li');
-			$anchor = Widget::Anchor($name,  $link);
-			$anchor->setAttribute('class', 'inactive');
-			
-			if ($active == true) {
-				$anchor->setAttribute('class', 'active');
-			}
-			
-			// Edit link:
-			if ($link_edit) {
-				$edit = Widget::Anchor(__('Edit'), $link_edit);
-				$edit->setAttribute('class', 'edit');
-				$item->appendChild($edit);
-			}
-			
-			$item->appendChild($anchor);
-			
-			return $item;
 		}
 		
 		public function appendContent() {

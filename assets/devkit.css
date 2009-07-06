@@ -1,0 +1,143 @@
+/*---------------------------------------------------------------------------------
+	List
+---------------------------------------------------------------------------------*/
+	
+	#content dl {
+		font: 115% monospace;
+		padding: 20px;
+	}
+	#content dl dt {
+		color: hsl(0, 0%, 80%);
+		clear: both;
+		float: left;
+		width: 300px;
+	}
+	#content dl dd {
+		color: hsl(210, 50%, 80%);
+		margin: 0 0 0 310px;
+	}
+	
+/*---------------------------------------------------------------------------------
+	Source
+---------------------------------------------------------------------------------*/
+	
+	#content table {
+		border-spacing: 0;
+		color: hsl(0, 0%, 50%);
+		font: 115% monospace;
+		padding: 20px 0;
+		table-layout: fixed;
+	}
+	
+	#content table th {
+		text-align: right;
+		width: 1%;
+		vertical-align: top;
+	}
+	#content table th a {
+		color: hsl(210, 5%, 20%);
+		display: block;
+		padding: 0 10px 0 20px;
+		text-shadow: none;
+	}
+	#content table th a:hover,
+	#content table tr:hover th a,
+	#content table tr:target th a {
+		color: hsl(210, 5%, 40%);
+	}
+	
+	#content table td {
+		padding: 0 290px 0 0;
+		white-space: pre;
+		vertical-align: top;
+	}
+	
+	#content table tr:hover,
+	#content table tr:target {
+		background: hsl(210, 5%, 15%);
+	}
+	
+	/*
+	#source > div {
+		display: table;
+		border-spacing: 0;
+		width: 100%;
+	}
+	#source > div > ol {
+		display: table-cell;
+		list-style: none;
+		padding: 20px 0;
+		width: 1%;
+	}
+	#source > div > ol a {
+		color: hsl(210, 5%, 30%);
+		display: block;
+		padding: 0 0 0 20px;
+		text-align: right;
+		text-shadow: none;
+	}
+	#source > div > ol a:hover {
+		color: hsl(210, 5%, 50%);
+	}
+	#source > div > pre {
+		display: table-cell;
+		color: hsl(0, 0%, 50%);
+		padding: 20px 0;
+	}
+	#source > div > pre > span {
+		display: inline-block;
+		width: 100%;
+	}
+	#source > div > pre > span:hover,
+	#source > div > pre > span:target {
+		background-color: hsl(210, 5%, 15%);
+	}
+	#source > div > pre > span:before {
+		visibility: hidden;
+		content: '\00a0';
+	}
+	
+	#source .error {
+		background: rgba(255, 180, 180, 0.2);
+		color: rgba(255, 255, 255, 0.9);
+		margin: -0.2em;
+		padding: 0.2em;
+	}
+	#source .comment {
+		color: hsl(0, 0%, 30%);
+	}
+	*/
+	
+	/*-----------------------------------------------------------------------------
+		Markup
+	-----------------------------------------------------------------------------*/
+		
+		#source .context-markup .declaration {
+			color: hsl(0, 0%, 80%);
+		}
+		
+		#source .context-markup .tag {
+			color: hsl(0, 0%, 80%);
+		}
+		
+		#source .context-markup .attribute {
+			color: hsl(0, 0%, 80%);
+		}
+		
+		#source .context-markup .entity {
+			color: hsl(80, 50%, 80%);
+		}
+		
+		#source .context-markup .value {
+			color: hsl(210, 50%, 80%);
+		}
+		
+		/*-------------------------------------------------------------------------
+			XSL
+		-------------------------------------------------------------------------*/
+			
+			#source .context-markup.xsl .xpath {
+				color: hsl(300, 50%, 80%);
+			}
+			
+/*-------------------------------------------------------------------------------*/

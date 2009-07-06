@@ -1,7 +1,20 @@
 <?php
-
+	
+	if (!defined('BITTER_LANGUAGE_PATH')) {
+		define('BITTER_LANGUAGE_PATH', EXTENSIONS . '/debugdevkit/lib/bitter/languages');
+	}
+	
+	if (!defined('BITTER_FORMAT_PATH')) {
+		define('BITTER_FORMAT_PATH', EXTENSIONS . '/debugdevkit/lib/bitter/formats');
+	}
+	
+	if (!defined('BITTER_CACHE_PATH')) {
+		define('BITTER_CACHE_PATH', EXTENSIONS . '/debugdevkit/lib/bitter/caches');
+	}
+	
 	require_once(TOOLKIT . '/class.devkit.php');
 	require_once(EXTENSIONS . '/debugdevkit/lib/lib.bitterhtml.php');
+	require_once(EXTENSIONS . '/debugdevkit/lib/bitter/bitter.php');
 	
 	class Content_DebugDevKit_Debug extends DevKit {
 		protected $_view = '';
@@ -19,9 +32,15 @@
 			}
 		}
 		
-		protected function appendJump() {
+		public function build() {
+			$this->_view = (strlen(trim($_GET['debug'])) == 0 ? 'xml' : $_GET['debug']);
+			$this->_xsl = @file_get_contents($this->_pagedata['filelocation']);
+			
+			return parent::build();
+		}
+		
+		protected function buildJump($wrapper) {
 			$list = new XMLElement('ul');
-			$list->setAttribute('id', 'jump');
 			
 			$list->appendChild($this->buildJumpItem(
 				__('Params'),
@@ -57,42 +76,49 @@
 				($this->_view == 'result')
 			));
 			
-			$this->Body->appendChild($list);
+			$wrapper->appendChild($list);
 		}
 		
-		public function appendContent() {
-			$this->_view = (strlen(trim($_GET['debug'])) == 0 ? 'xml' : $_GET['debug']);
-			$this->_xsl = @file_get_contents($this->_pagedata['filelocation']);
-			
-			$this->appendHeader();
-			$this->appendNavigation();
-			$this->appendJump();
+		public function buildContent($wrapper) {
+			$this->addStylesheetToHead(URL . '/extensions/debugdevkit/assets/devkit.css', 'screen', 9126343);
 			
 			if ($this->_view == 'params') {
-				$this->Body->appendChild($this->__buildParams($this->_param));
+				$wrapper->appendChild($this->__buildParams($this->_param));
 				
 			} else if ($this->_view == 'xml') {
-				$this->Body->appendChildArray($this->__buildCodeBlock($this->_xml, 'xml'));
+				$this->appendSource($wrapper, $this->_xml, 'xml');
 				
 			} else if ($this->_view == 'result') {
-				$this->Body->appendChildArray($this->__buildCodeBlock($this->_output, 'result'));
+				$this->appendSource($wrapper, $this->_output, 'xml');
 				
 			} else {
 				if ($_GET['debug'] == basename($this->_pagedata['filelocation'])) {
-					$this->Body->appendChildArray($this->__buildCodeBlock($this->_xsl, basename($page['filelocation'])));
+					$this->appendSource($wrapper, $this->_xsl, 'xsl');
 					
 				} else if ($_GET['debug']{0} == 'u') {
 					if (is_array($this->_full_utility_list) && !empty($this->_full_utility_list)) {
 						foreach ($this->_full_utility_list as $u) {
 							if ($_GET['debug'] != 'u-'.basename($u)) continue;
 							
-							$this->Body->appendChildArray($this->__buildCodeBlock(@file_get_contents(UTILITIES . '/' . basename($u)), 'u-'.basename($u)));
-							
+							$this->appendSource($wrapper, @file_get_contents(UTILITIES . '/' . basename($u)), 'xsl');
 							break;
 						}
 					}
 				}
 			}
+		}
+		
+		protected function appendSource($wrapper, $source, $language = 'xml') {
+			$bitter = new Bitter(false);
+			$bitter->loadFormat('symphony');
+			$bitter->loadLanguage($language);
+			
+			$inner = new XMLElement(
+				'div', $bitter->process($source)
+			);
+			$inner->setAttribute('id', 'source');
+			
+			$wrapper->appendChild($inner);
 		}
 		
 		protected function __buildParams($params){
@@ -156,32 +182,6 @@
 			}
 			
 			return $utilities;
-		}
-		
-		protected function __buildCodeBlock($code, $id) {
-			$line_numbering = new XMLElement('ol');
-
-			$lang = new BitterLangHTML;
-
-			$code = $lang->process(
-				stripslashes($code), 4
-			);
-	
-			$code = preg_replace(array('/^<span class="markup">/i', '/<\/span>$/i'), NULL, trim($code));
-			
-			$lines = preg_split('/(\r\n|\r|\n)/i', $code);
-			
-			$value = NULL;
-			
-			foreach($lines as $n => $l){
-				$value .= sprintf('<span id="line-%d"></span>%s', ($n + 1), $l) . General::CRLF;
-				$line_numbering->appendChild(new XMLElement('li', sprintf('<a href="#line-%d">%1$d</a>', ($n + 1))));
-			}
-			
-			$pre = new XMLElement('pre', sprintf('<code><span class="markup">%s </span></code>', trim($value)));
-			
-			return array($line_numbering, $pre);
-			
 		}
 	}
 	

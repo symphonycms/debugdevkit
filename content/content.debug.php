@@ -13,7 +13,6 @@
 	}
 	
 	require_once(TOOLKIT . '/class.devkit.php');
-	require_once(EXTENSIONS . '/debugdevkit/lib/lib.bitterhtml.php');
 	require_once(EXTENSIONS . '/debugdevkit/lib/bitter/bitter.php');
 	
 	class Content_DebugDevKit_Debug extends DevKit {

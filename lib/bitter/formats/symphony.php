@@ -13,7 +13,7 @@
 			$this->processLines();
 			
 			return sprintf(
-				'<table>%s</table>',
+				'<table class="source">%s</table>',
 				$this->output
 			);
 		}

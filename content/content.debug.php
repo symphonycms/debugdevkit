@@ -120,19 +120,23 @@
 			$wrapper->appendChild($inner);
 		}
 		
-		protected function __buildParams($params){
+		protected function __buildParams($params) {
+			if (!is_array($params) || empty($params)) return;
 			
-			if(!is_array($params) || empty($params)) return;
+			$wrapper = new XMLElement('div');
+			$wrapper->setAttribute('id', 'params');
+			$table = new XMLElement('table');
 			
-			$dl = new XMLElement('dl', NULL, array('id' => 'params'));
-			
-			foreach($params as $key => $value){				
-				$dl->appendChild(new XMLElement('dt', "\${$key}"));
-				$dl->appendChild(new XMLElement('dd', "'{$value}'"));
+			foreach ($params as $key => $value) {
+				$row = new XMLElement('tr');
+				$row->appendChild(new XMLElement('th', "\${$key}"));
+				$row->appendChild(new XMLElement('td', "'{$value}'"));
+				$table->appendChild($row);
 			}
 			
-			return $dl;
+			$wrapper->appendChild($table);
 			
+			return $wrapper;
 		}
 		
 		protected function __buildUtilityList($utilities, $level=1, $view = null) {

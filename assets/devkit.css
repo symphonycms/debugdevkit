@@ -37,6 +37,9 @@
 	Source
 ---------------------------------------------------------------------------------*/
 	
+	#source table {
+		white-space: pre;
+	}
 	#source table th {
 		text-align: right;
 		width: 1%;
@@ -53,9 +56,10 @@
 	#source table tr:target th a {
 		color: hsl(210, 5%, 40%);
 	}
-	
-	#source table td {
-		white-space: pre;
+	#source table th,
+	#source table th * {
+		-moz-user-select: none;
+		-webkit-user-select: none;
 	}
 	
 	#source table tr:hover,

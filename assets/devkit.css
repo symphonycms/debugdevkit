@@ -38,7 +38,7 @@
 ---------------------------------------------------------------------------------*/
 	
 	#source table {
-		white-space: pre;
+		white-space: pre-wrap;
 	}
 	#source table th {
 		text-align: right;

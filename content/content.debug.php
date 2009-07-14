@@ -24,7 +24,7 @@
 			parent::__construct();
 			
 			$this->_title = __('Debug');
-			$this->_query_string = parent::__buildQueryString(array('debug'));
+			$this->_query_string = parent::__buildQueryString(array('symphony-page', 'debug'));
 			
 			if (!empty($this->_query_string)) {
 				$this->_query_string = '&amp;' . General::sanitize($this->_query_string);

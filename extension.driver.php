@@ -70,10 +70,6 @@
 			else {
 				$xml->documentElement->appendChild($item);
 			}
-			
-			var_dump($xml->saveXML());
-			
-			exit;
 		}
 	}
 	

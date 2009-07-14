@@ -41,8 +41,9 @@
 				
 				$context['devkit'] = new Content_DebugDevKit_Debug();
 				self::$active = true;
-				
-			} else if (isset($_GET['debug-edit'])) {
+			}
+			
+			else if (false and isset($_GET['debug-edit'])) {
 				require_once(EXTENSIONS . '/debugdevkit/content/content.debug.php');
 				require_once(EXTENSIONS . '/debugdevkit/content/content.edit.php');
 				
@@ -52,13 +53,27 @@
 		}
 		
 		public function manipulateDevKitNavigation($context) {
+			header('content-type: text/plain');
+			
 			$xml = $context['xml'];
 			$item = $xml->createElement('item');
 			$item->setAttribute('name', __('Debug'));
 			$item->setAttribute('handle', 'debug');
 			$item->setAttribute('active', (self::$active ? 'yes' : 'no'));
 			
-			$xml->documentElement->appendChild($item);
+			$parent = $xml->documentElement;
+			
+			if ($parent->hasChildNodes()) {
+				$parent->insertBefore($item, $parent->firstChild);
+			}
+			
+			else {
+				$xml->documentElement->appendChild($item);
+			}
+			
+			var_dump($xml->saveXML());
+			
+			exit;
 		}
 	}
 	

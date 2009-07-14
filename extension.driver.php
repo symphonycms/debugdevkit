@@ -10,8 +10,8 @@
 		public function about() {
 			return array(
 				'name'			=> 'Debug DevKit',
-				'version'		=> '1.0.1',
-				'release-date'	=> '2009-05-20',
+				'version'		=> '1.0.2',
+				'release-date'	=> '2009-07-14',
 				'author'		=> array(
 					'name'			=> 'Rowan Lewis',
 					'website'		=> 'http://pixelcarnage.com/',

@@ -15,6 +15,11 @@
 	require_once(TOOLKIT . '/class.devkit.php');
 	require_once(EXTENSIONS . '/debugdevkit/lib/bitter/bitter.php');
 	
+	// Create cache folter:
+	if (!is_dir(BITTER_CACHE_PATH)) {
+		General::realiseDirectory(BITTER_CACHE_PATH);
+	}
+	
 	class Content_DebugDevKit_Debug extends DevKit {
 		protected $_view = '';
 		protected $_xsl = '';

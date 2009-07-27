@@ -41,6 +41,7 @@
 		white-space: pre-wrap;
 	}
 	#source table th {
+		cursor: pointer;
 		text-align: right;
 		width: 1%;
 		vertical-align: top;
@@ -52,8 +53,7 @@
 		text-shadow: none;
 	}
 	#source table th a:hover,
-	#source table tr:hover th a,
-	#source table tr:target th a {
+	#source table tr:hover th a {
 		color: hsl(210, 5%, 40%);
 	}
 	#source table th,
@@ -62,9 +62,27 @@
 		-webkit-user-select: none;
 	}
 	
-	#source table tr:hover,
-	#source table tr:target {
+	#source table.highlight tr td {
+		opacity: 0.3;
+	}
+	#source table.highlight tr.target td {
+		opacity: 1;
+	}
+	
+	#source table tr:hover {
 		background: hsl(210, 5%, 15%);
+	}
+	
+	#source table:not(.highlight) .tag-match,
+	#source table.highlight tr.target .tag-match {
+		background: hsl(210, 5%, 10%);
+		-moz-box-shadow: 0 0 30px hsl(210, 5%, 50%);
+		-webkit-box-shadow: 0 0 60px hsl(210, 5%, 50%);
+		-moz-border-radius: 4px;
+		-webkit-border-radius: 4px;
+		margin: 0 -2px;
+		padding: 2px;
+		position: relative;
 	}
 	
 	/*-----------------------------------------------------------------------------

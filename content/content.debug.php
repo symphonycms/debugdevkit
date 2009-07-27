@@ -85,6 +85,10 @@
 		
 		public function buildContent($wrapper) {
 			$this->addStylesheetToHead(URL . '/extensions/debugdevkit/assets/devkit.css', 'screen', 9126343);
+			$this->addScriptToHead(URL . '/symphony/assets/jquery.js', 9126342);
+			$this->addScriptToHead(URL . '/extensions/debugdevkit/assets/jquery.scrollto.js', 9126344);
+			$this->addScriptToHead(URL . '/extensions/debugdevkit/assets/jquery.debug.js', 9126343);
+			$this->addScriptToHead(URL . '/extensions/debugdevkit/assets/devkit.js', 9126344);
 			
 			if ($this->_view == 'params') {
 				$wrapper->appendChild($this->__buildParams($this->_param));

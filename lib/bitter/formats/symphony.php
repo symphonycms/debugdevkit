@@ -76,8 +76,8 @@
 		}
 		
 		protected function startLine() {
-			$this->output .= "<tr id=\"line-{$this->line}\">";
-			$this->output .= "<th><a href=\"#line-{$this->line}\">{$this->line}</a></th>";
+			$this->output .= "<tr id=\"{$this->line}\">";
+			$this->output .= "<th><a href=\"#{$this->line}\">{$this->line}</a></th>";
 			$this->output .= "<td>";
 		}
 		

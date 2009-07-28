@@ -13,7 +13,7 @@
 			$this->processLines();
 			
 			return sprintf(
-				'<table class="source">%s</table>',
+				'<pre>%s</pre>',
 				$this->output
 			);
 		}
@@ -76,15 +76,15 @@
 		}
 		
 		protected function startLine() {
-			$this->output .= "<tr id=\"{$this->line}\">";
-			$this->output .= "<th><a href=\"#{$this->line}\">{$this->line}</a></th>";
-			$this->output .= "<td>";
+			$this->output .= "<line id=\"{$this->line}\">";
+			$this->output .= "<marker></marker>";
+			$this->output .= "<content>";
 		}
 		
 		protected function endLine() {
 			$this->line++;
-			$this->output .= '</td>';
-			$this->output .= '</tr>';
+			$this->output .= '</content>';
+			$this->output .= '</line>';
 		}
 	}
 	

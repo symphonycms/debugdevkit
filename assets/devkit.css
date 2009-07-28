@@ -37,52 +37,73 @@
 	Source
 ---------------------------------------------------------------------------------*/
 	
-	#source table {
+	#source pre {
+		color: hsl(0, 0%, 50%);
+		counter-reset: markers;
+		display: table;
+		font: 115% monospace;
+		padding: 20px 0;
+		white-space: normal;
+	}
+	#source pre line {
+		display: table-row;
+		counter-increment: markers;
+		padding: 0 20px 0 50px;
 		white-space: pre-wrap;
 	}
-	#source table th {
+	
+	#source pre line.selected {
+		background: hsl(210, 5%, 7%);
+	}
+	
+	#source pre line:hover {
+		background: hsl(210, 5%, 15%);
+	}
+	#source pre line:hover marker {
+		color: hsl(210, 5%, 40%);
+	}
+	
+	#source pre line.selecting,
+	#source pre line.deselecting {
+		background: hsl(210, 5%, 5%);
+	}
+	
+	#source pre line marker {
+		color: hsl(210, 5%, 20%);
 		cursor: pointer;
+		display: table-cell;
+		padding: 0 10px 0 20px;
 		text-align: right;
+		-moz-user-select: none;
+		-webkit-user-select: none;
 		width: 1%;
 		vertical-align: top;
 	}
-	#source table th a {
-		color: hsl(210, 5%, 20%);
-		display: block;
-		padding: 0 10px 0 20px;
-		text-shadow: none;
-	}
-	#source table th a:hover,
-	#source table tr:hover th a {
-		color: hsl(210, 5%, 40%);
-	}
-	#source table th,
-	#source table th * {
-		-moz-user-select: none;
-		-webkit-user-select: none;
+	#source pre line marker:after {
+		content: counter(markers);
 	}
 	
-	#source table.highlight tr td {
-		opacity: 0.3;
+	#source pre line content {
+		display: table-cell;
+		padding: 0 20px 0 0;
 	}
-	#source table.highlight tr.target td {
-		opacity: 1;
-	}
-	
-	#source table tr:hover {
-		background: hsl(210, 5%, 15%);
-	}
-	
-	#source table:not(.highlight) .tag-match,
-	#source table.highlight tr.target .tag-match {
-		background: hsl(210, 5%, 10%);
-		-moz-box-shadow: 0 0 30px hsl(210, 5%, 50%);
-		-webkit-box-shadow: 0 0 60px hsl(210, 5%, 50%);
+	#source pre line content .tag-match {
+		background: hsl(50, 100%, 50%);
+		background: -webkit-gradient(markerar, left top, left bottom, from(hsl(50, 100%, 50%)), to(hsl(50, 100%, 45%)));
+		border: 1px solid hsl(50, 100%, 75%);
+		-moz-box-shadow: 0 0 10px hsl(210, 5%, 5%);
+		-webkit-box-shadow: 0 0 10px hsl(210, 5%, 5%);
 		-moz-border-radius: 4px;
 		-webkit-border-radius: 4px;
-		margin: 0 -2px;
-		padding: 2px;
+		display: inline-block;
+		cursor: pointer;
+		margin: -1px -2px;
+		padding: 0 1px;
 		position: relative;
+	}
+	#source pre line content .tag-match,
+	#source pre line content .tag-match * {
+		color: hsl(50, 100%, 5%) !important;
 	}
 	
 	/*-----------------------------------------------------------------------------

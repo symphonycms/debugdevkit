@@ -81,23 +81,25 @@ jQuery(document).ready(function() {
 		var current = $(this), handle = current.attr('handle');
 		var opposite = source.find('.tag[handle = "' + handle + '"]').not(current);
 		
-		source.find('.tag-match').removeClass('tag-match');
+		if (current.is('.tag-match')) return false;
 		
+		source.find('.tag-match')
+			.removeClass('tag-match');
 		current.addClass('tag-match');
 		opposite.addClass('tag-match');
 		
 		// Jump to opposite:
-		current.bind('mousedown', function() {
+		current.bind('mousedown', function(event) {
 			$('#content').scrollTo(opposite, {
-				offset: 0 - current.position().top
+				offset: (0 - event.clientY) + (opposite.height() / 2)
 			});
 			
 			return false;
 		});
 		
-		opposite.bind('mousedown', function() {
+		opposite.bind('mousedown', function(event) {
 			$('#content').scrollTo(current, {
-				offset: 0 - opposite.position().top
+				offset: (0 - event.clientY) + (current.height() / 2)
 			});
 			
 			return false;
@@ -142,7 +144,8 @@ jQuery(document).ready(function() {
 					to = parseInt(bits[3]);
 				}
 				
-				highlight.draw_range(from, to);
+				highlight.draw_selection(from, to);
+				source.addClass('selected');
 			}
 		},
 		
@@ -186,32 +189,36 @@ jQuery(document).ready(function() {
 		},
 		
 		clear_all:	function() {
+			source.removeClass('selected');
 			source.find('line')
 				.removeClass('selected selecting deselecting');
 		},
 		
-		draw_range:	function(from, to) {
-			var count = from;
+		draw_selection:	function(from, to) {
+			var selector = 'line';
+			var index_from = from - 2;
+			var index_to = (to - from) + 1;
 			
-			while (count <= to) {
-				source.find('#' + count)
-					.addClass(highlight.action);
-				
-				count = count + 1;
+			if (index_from >= 0) {
+				selector = selector + ':gt(' + index_from + ')';
 			}
+			
+			selector = selector + ':lt(' + index_to + ')';
+			
+			source.find(selector).addClass(highlight.action);
 		},
 		
 		event_ignore:		function() {
 			return false;
 		},
-			
+		
 		event_start:	function() {
 			var line = $(this).parent();
 			
 			source
 				.bind('mousedown', highlight.event_ignore);
 			source.find('line')
-				.bind('mouseenter', highlight.event_toggle)
+				.bind('mouseover', highlight.event_toggle)
 				.bind('mouseup', highlight.event_stop);
 			
 			highlight.from = parseInt(line.attr('id'));
@@ -222,7 +229,7 @@ jQuery(document).ready(function() {
 				highlight.action = 'deselecting';
 			}
 			
-			highlight.draw_range(
+			highlight.draw_selection(
 				highlight.from, highlight.to
 			);
 			
@@ -236,7 +243,7 @@ jQuery(document).ready(function() {
 				.removeClass('selecting deselecting');
 			
 			highlight.to = parseInt(line.attr('id'));
-			highlight.draw_range(
+			highlight.draw_selection(
 				Math.min(highlight.from, highlight.to),
 				Math.max(highlight.from, highlight.to)
 			);
@@ -245,17 +252,18 @@ jQuery(document).ready(function() {
 		},
 		
 		event_stop:		function() {
+			source.addClass('selected');
 			source.find('.selecting')
 				.removeClass('selecting')
 				.addClass('selected');
 			
 			source.find('.deselecting')
-				.removeClass('deselecting selected active');
+				.removeClass('deselecting selected');
 			
 			source
 				.unbind('mousedown', highlight.event_ignore);
 			source.find('line')
-				.unbind('mouseenter', highlight.event_toggle)
+				.unbind('mouseover', highlight.event_toggle)
 				.unbind('mouseup', highlight.event_stop);
 			
 			highlight.write_hash();

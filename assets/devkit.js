@@ -173,10 +173,12 @@ jQuery(document).ready(function() {
 	input.bind('keyup', function(event) {
 		if ((event || window.event).keyCode !== 13) return true;
 		
+		source.find('.xpath-match').removeClass('xpath-match');
+		
+		if (input.val() == '') return false;
+		
 		var iterator = source_document.evaluate(this.value, source_document.documentElement, null, 0, null);
 		var match = null;
-		
-		source.find('.xpath-match').removeClass('xpath-match');
 		
 		if (iterator.resultType < 4) return false;
 		

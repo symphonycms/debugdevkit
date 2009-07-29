@@ -124,6 +124,7 @@ jQuery(document).ready(function() {
 		.parseFromString(source.text(), 'text/xml');
 	var input = $('<input />')
 		.attr('id', 'xpath')
+		.attr('autocomplete', 'off')
 		.insertBefore(source);
 	var index = -1, in_text = false;
 	
@@ -171,11 +172,11 @@ jQuery(document).ready(function() {
 	});
 	
 	input.bind('keyup', function(event) {
-		if ((event || window.event).keyCode !== 13) return true;
+		if ((event || window.event).keyCode !== 13) {
+			input.change(); return true;
+		}
 		
 		source.find('.xpath-match').removeClass('xpath-match');
-		
-		if (input.val() == '') return false;
 		
 		var iterator = source_document.evaluate(this.value, source_document.documentElement, null, 0, null);
 		var match = null;
@@ -200,6 +201,12 @@ jQuery(document).ready(function() {
 		}
 		
 		return false;
+	});
+	
+	input.bind('change', function() {
+		if (input.val() == '') {
+			source.find('.xpath-match').removeClass('xpath-match');
+		}
 	});
 	
 /*-----------------------------------------------------------------------------

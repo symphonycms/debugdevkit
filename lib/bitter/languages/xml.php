@@ -149,11 +149,19 @@
 ------------------------------------------------------------------------------*/
 	
 	Bitter::rule(
+		Bitter::id('xml-text'),
+		Bitter::tag('text'),
+		Bitter::capture('[^<>]{1,}'),
+		
+		Bitter::id('xml-entity')
+	);
+	
+	Bitter::rule(
 		Bitter::id('xml-include'),
 		Bitter::tag('context-markup xml'),
 		Bitter::capture('.+', 's'),
 		
-		Bitter::id('xml-entity'),
+		Bitter::id('xml-text'),
 		Bitter::id('xml-doctype'),
 		Bitter::id('xml-comment'),
 		Bitter::id('xml-cdata'),

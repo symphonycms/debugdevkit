@@ -116,6 +116,91 @@ jQuery(document).ready(function() {
 	});
 	
 /*-----------------------------------------------------------------------------
+	XPath highlighting:
+-----------------------------------------------------------------------------*/
+	
+	//source.text()
+	var source_document  = new DOMParser()
+		.parseFromString(source.text(), 'text/xml');
+	var input = $('<input />')
+		.attr('id', 'xpath')
+		.insertBefore(source);
+	var index = -1, in_text = false;
+	
+	// Add 'xpath-index' attribute to matchable nodes:
+	source.find('.tag, .attribute, .text').each(function() {
+		var node = $(this);
+		
+		if (node.is('.tag.open')) {
+			index += 1;
+			in_text = false;
+		}
+		
+		else if (node.is('.tag.close')) {
+			in_text = false;
+			return true;
+		}
+		
+		else if (index >= 0) {
+			if (node.is('.text')) {
+				if (!in_text) index += 1;
+				
+				in_text = true;
+			}
+			
+			else {
+				index += 1;
+				in_text = false;
+			}
+		}
+		
+		else return true;
+		
+		if (index >= 0) {
+			node.attr('xpath-index', index);
+			//node.text('[' + index + ']' + node.text());
+			
+			// End tag:
+			if (node.is('.tag.open[handle]')) {
+				var handle = node.attr('handle');
+				var close = source.find('.tag[handle = "' + handle + '"]').not(node);
+				
+				close.attr('xpath-index', index);
+			}
+		}
+	});
+	
+	input.bind('keyup', function(event) {
+		if ((event || window.event).keyCode !== 13) return true;
+		
+		var iterator = source_document.evaluate(this.value, source_document.documentElement, null, 0, null);
+		var match = null;
+		
+		source.find('.xpath-match').removeClass('xpath-match');
+		
+		if (iterator.resultType < 4) return false;
+		
+		while (node = iterator.iterateNext()) {
+			var index = source_document.evaluate(
+				'count(ancestor::* | preceding::* | ancestor::*/@* | preceding::*/@* | preceding::text() | preceding::comment())',
+				node, null, 1, null
+			).numberValue;
+			
+			// Attributes are offset:
+			if (node.nodeType === 2) {
+				index += Array.prototype.indexOf.call(node.ownerElement.attributes, node)
+					- node.ownerElement.attributes.length;
+			}
+			
+			source.find('span[xpath-index = ' + index + ']')
+				.not(':empty')
+				.addClass('xpath-match');
+		}
+		
+		return false;
+	});
+	
+/*-----------------------------------------------------------------------------
 	Line highlighting:
 -----------------------------------------------------------------------------*/
 	

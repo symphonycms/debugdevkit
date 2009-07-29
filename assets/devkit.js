@@ -119,14 +119,14 @@ jQuery(document).ready(function() {
 	XPath highlighting:
 -----------------------------------------------------------------------------*/
 	
-	//source.text()
+	var index = -1, in_text = false, in_document = false;
 	var source_document  = new DOMParser()
 		.parseFromString(source.text(), 'text/xml');
 	var input = $('<input />')
 		.attr('id', 'xpath')
 		.attr('autocomplete', 'off')
+		.val('//@*')
 		.insertBefore(source);
-	var index = -1, in_text = false;
 	
 	// Add 'xpath-index' attribute to matchable nodes:
 	source.find('.tag, .attribute, .text').each(function() {
@@ -135,6 +135,7 @@ jQuery(document).ready(function() {
 		if (node.is('.tag.open')) {
 			index += 1;
 			in_text = false;
+			in_document = true;
 		}
 		
 		else if (node.is('.tag.close')) {
@@ -142,17 +143,21 @@ jQuery(document).ready(function() {
 			return true;
 		}
 		
-		else if (index >= 0) {
-			if (node.is('.text')) {
-				if (!in_text) index += 1;
-				
-				in_text = true;
+		else if (in_document && node.is('.text')) {
+			if (!in_text) index += 1;
+			
+			in_text = true;
+		}
+		
+		else if (in_document && node.is('.attribute')) {
+			// Not selectable:
+			if (/^xmlns:?/i.test(node.text())) {
+				in_text = false;
+				return true;
 			}
 			
-			else {
-				index += 1;
-				in_text = false;
-			}
+			index += 1;
+			in_text = false;
 		}
 		
 		else return true;
@@ -160,6 +165,10 @@ jQuery(document).ready(function() {
 		if (index >= 0) {
 			node.attr('xpath-index', index);
 			//node.text('[' + index + ']' + node.text());
+			
+			if (node.is('.attribute')) {
+				//node.text('[' + index + ']' + node.text());
+			}
 			
 			// End tag:
 			if (node.is('.tag.open[handle]')) {
@@ -178,21 +187,24 @@ jQuery(document).ready(function() {
 		
 		source.find('.xpath-match').removeClass('xpath-match');
 		
-		var iterator = source_document.evaluate(this.value, source_document.documentElement, null, 0, null);
-		var match = null;
+		var parent = source_document.documentElement;
+		var resolver = source_document.createNSResolver(parent);
+		var iterator = source_document.evaluate(
+			this.value, parent, resolver, 0, null
+		);
 		
 		if (iterator.resultType < 4) return false;
 		
 		while (node = iterator.iterateNext()) {
 			var index = source_document.evaluate(
-				'count(ancestor::* | preceding::* | ancestor::*/@* | preceding::*/@* | preceding::text() | preceding::comment())',
-				node, null, 1, null
+				'count(ancestor::* | preceding::* | ancestor::*/@* | preceding::*/@* | preceding::text())',
+				node, resolver, 1, null
 			).numberValue;
-			
+ 			
 			// Attributes are offset:
 			if (node.nodeType === 2) {
-				index += Array.prototype.indexOf.call(node.ownerElement.attributes, node)
-					- node.ownerElement.attributes.length;
+				index += Array.prototype.indexOf.call(node.ownerElement.attributes, node);
+				index -= node.ownerElement.attributes.length;
 			}
 			
 			source.find('span[xpath-index = ' + index + ']')

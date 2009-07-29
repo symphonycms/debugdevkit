@@ -104,19 +104,23 @@
 		padding: 0 20px 0 0;
 	}
 	
+	#source pre line content .xpath-match,
+	#source pre line content .tag-match {
+		-moz-border-radius: 4px;
+		-webkit-border-radius: 4px;
+		display: inline-block;
+		margin: -2px -2px;
+		padding: 1px 1px;
+		position: relative;
+	}
+	
 	#source pre line content .xpath-match {
 		background: hsl(80, 100%, 50%);
 		background: -webkit-gradient(markerar, left top, left bottom, from(hsl(80, 100%, 50%)), to(hsl(80, 100%, 45%)));
 		border: 1px solid hsl(80, 100%, 75%);
 		-moz-box-shadow: 0 0 10px hsla(80, 100%, 50%, 0.5);
 		-webkit-box-shadow: 0 0 10px hsla(80, 100%, 50%, 0.5);
-		-moz-border-radius: 4px;
-		-webkit-border-radius: 4px;
-		display: inline-block;
-		cursor: pointer;
-		margin: -2px -2px;
-		padding: 1px 1px;
-		position: relative;
+		cursor: default;
 	}
 	#source pre line content .xpath-match,
 	#source pre line content .xpath-match * {
@@ -129,13 +133,7 @@
 		border: 1px solid hsl(40, 100%, 75%);
 		-moz-box-shadow: 0 0 10px hsla(40, 100%, 50%, 0.5);
 		-webkit-box-shadow: 0 0 10px hsla(40, 100%, 50%, 0.5);
-		-moz-border-radius: 4px;
-		-webkit-border-radius: 4px;
-		display: inline-block;
 		cursor: pointer;
-		margin: -2px -2px;
-		padding: 1px 1px;
-		position: relative;
 	}
 	#source pre line content .tag-match,
 	#source pre line content .tag-match * {

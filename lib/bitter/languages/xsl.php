@@ -36,6 +36,7 @@
 		Bitter::tag('context-markup xml xsl'),
 		Bitter::capture('.+', 's'),
 		
+		Bitter::id('xml-text'),
 		Bitter::id('xml-entity'),
 		Bitter::id('xml-doctype'),
 		Bitter::id('xml-comment'),

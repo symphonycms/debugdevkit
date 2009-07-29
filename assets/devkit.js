@@ -88,7 +88,12 @@ jQuery(document).ready(function() {
 		var input = $('<input />')
 			.attr('autocomplete', 'off')
 			.val('//*')
+			.val('string(//text()[normalize-space() and string-length() > 10])')
 			.appendTo(container);
+		var output = $('<div />')
+			.attr('id', 'output')
+			.insertBefore('#content')
+			.hide();
 		var nodes = {};
 		
 		// Add 'xpath-index' attribute to matchable nodes:
@@ -145,14 +150,32 @@ jQuery(document).ready(function() {
 			}
 			
 			source.find('.xpath-match').removeClass('xpath-match');
-			
+			console.log(this.value);
 			var parent = source_document.documentElement;
 			var resolver = source_document.createNSResolver(parent);
 			var matches = source_document.evaluate(
 				this.value, parent, resolver, 0, null
 			);
 			
-			if (matches.resultType < 4) return false;
+			if (matches.resultType < 4) {
+				var value = null, type = null;
+				
+				switch (matches.resultType) {
+					case 1: value = matches.numberValue; break;
+					case 2: value = matches.stringValue; break;
+					case 3: value = matches.booleanValue; break;
+				}
+				
+				if (value == null) return false;
+				
+				output.text(value).fadeIn(150);
+				
+				setTimeout(function() {
+					output.fadeOut(250);
+				}, 3000);
+				
+				return false;
+			}
 			
 			while (match = matches.iterateNext()) {
 				var index = source_document.evaluate(

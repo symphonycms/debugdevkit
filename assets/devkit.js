@@ -125,7 +125,7 @@ jQuery(document).ready(function() {
 	var input = $('<input />')
 		.attr('id', 'xpath')
 		.attr('autocomplete', 'off')
-		.val('//events')
+		.val('//*')
 		.insertBefore(source);
 	var nodes = {};
 	

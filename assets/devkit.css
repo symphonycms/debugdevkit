@@ -38,7 +38,7 @@
 ---------------------------------------------------------------------------------*/
 	
 	#content {
-		top: 40px;
+		top: 41px;
 	}
 	#input {
 		background: hsl(210, 5%, 15%);
@@ -51,7 +51,6 @@
 		padding: 0 20px;
 		position: fixed;
 		right: 270px;
-		top: 0;
 	}
 	#input input {
 		background: transparent;

@@ -7,7 +7,7 @@ jQuery(document).ready(function() {
 -----------------------------------------------------------------------------*/
 	
 	(function() {
-		var depth = 0; var opened = [];
+		var depth = 0, stack = [];
 		
 		// Create tag mapping attributes:
 		source.find('.tag').each(function(position) {
@@ -21,7 +21,7 @@ jQuery(document).ready(function() {
 			
 			// Closing:
 			else if (tag.hasClass('.close')) {
-				tag.attr('handle', opened.pop());
+				tag.attr('handle', stack.pop());
 				tag.attr('id', 'close-' + tag.attr('handle'));
 				depth = depth - 1;
 			}
@@ -31,7 +31,7 @@ jQuery(document).ready(function() {
 				depth = depth + 1;
 				tag.attr('handle', depth + '-' + position);
 				tag.attr('id', 'open-' + tag.attr('handle'));
-				opened.push(tag.attr('handle'));
+				stack.push(tag.attr('handle'));
 			}
 		});
 		

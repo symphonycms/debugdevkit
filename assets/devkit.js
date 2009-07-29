@@ -88,7 +88,6 @@ jQuery(document).ready(function() {
 		var input = $('<input />')
 			.attr('autocomplete', 'off')
 			.val('//*')
-			.val('string(//text()[normalize-space() and string-length() > 10])')
 			.appendTo(container);
 		var output = $('<div />')
 			.attr('id', 'output')

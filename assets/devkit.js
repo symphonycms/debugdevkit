@@ -91,7 +91,7 @@ jQuery(document).ready(function() {
 		// Jump to opposite:
 		current.bind('mousedown', function(event) {
 			$('#content').scrollTo(opposite, {
-				offset: (0 - event.clientY) + (opposite.height() / 2)
+				offset: (0 - event.clientY) + (opposite.height() / 2) + 40
 			});
 			
 			return false;
@@ -99,7 +99,7 @@ jQuery(document).ready(function() {
 		
 		opposite.bind('mousedown', function(event) {
 			$('#content').scrollTo(current, {
-				offset: (0 - event.clientY) + (current.height() / 2)
+				offset: (0 - event.clientY) + (current.height() / 2) + 40
 			});
 			
 			return false;
@@ -125,8 +125,9 @@ jQuery(document).ready(function() {
 	var input = $('<input />')
 		.attr('id', 'xpath')
 		.attr('autocomplete', 'off')
-		.val('//@*')
+		.val('//events')
 		.insertBefore(source);
+	var nodes = {};
 	
 	// Add 'xpath-index' attribute to matchable nodes:
 	source.find('.tag, .attribute, .text').each(function() {
@@ -163,19 +164,15 @@ jQuery(document).ready(function() {
 		else return true;
 		
 		if (index >= 0) {
-			node.attr('xpath-index', index);
-			//node.text('[' + index + ']' + node.text());
-			
-			if (node.is('.attribute')) {
-				//node.text('[' + index + ']' + node.text());
-			}
+			nodes[index] = [node];
 			
 			// End tag:
 			if (node.is('.tag.open[handle]')) {
-				var handle = node.attr('handle');
-				var close = source.find('.tag[handle = "' + handle + '"]').not(node);
-				
-				close.attr('xpath-index', index);
+				nodes[index].push(source.find(
+					'.tag.close[handle = "'
+					+ node.attr('handle')
+					+ '"]'
+				));
 			}
 		}
 	});
@@ -189,36 +186,36 @@ jQuery(document).ready(function() {
 		
 		var parent = source_document.documentElement;
 		var resolver = source_document.createNSResolver(parent);
-		var iterator = source_document.evaluate(
+		var matches = source_document.evaluate(
 			this.value, parent, resolver, 0, null
 		);
 		
-		if (iterator.resultType < 4) return false;
+		if (matches.resultType < 4) return false;
 		
-		while (node = iterator.iterateNext()) {
+		while (match = matches.iterateNext()) {
 			var index = source_document.evaluate(
 				'count(ancestor::* | preceding::* | ancestor::*/@* | preceding::*/@* | preceding::text())',
-				node, resolver, 1, null
+				match, resolver, 1, null
 			).numberValue;
  			
 			// Attributes are offset:
-			if (node.nodeType === 2) {
-				index += Array.prototype.indexOf.call(node.ownerElement.attributes, node);
-				index -= node.ownerElement.attributes.length;
+			if (match.nodeType === 2) {
+				index += Array.prototype.indexOf.call(match.ownerElement.attributes, match);
+				index -= match.ownerElement.attributes.length;
 			}
 			
-			source.find('span[xpath-index = ' + index + ']')
-				.not(':empty')
-				.addClass('xpath-match');
+			$.each(nodes[index], function() {
+				$(this).not(':empty').addClass('xpath-match');
+			});
 		}
 		
 		return false;
 	});
 	
 	input.bind('change', function() {
-		if (input.val() == '') {
-			source.find('.xpath-match').removeClass('xpath-match');
-		}
+		if (input.val() != '') return true;
+		
+		source.find('.xpath-match').removeClass('xpath-match');
 	});
 	
 /*-----------------------------------------------------------------------------

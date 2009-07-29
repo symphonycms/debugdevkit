@@ -122,11 +122,13 @@ jQuery(document).ready(function() {
 	var index = -1, in_text = false, in_document = false;
 	var source_document  = new DOMParser()
 		.parseFromString(source.text(), 'text/xml');
+	var container = $('<div />')
+		.attr('id', 'input')
+		.insertBefore(source);
 	var input = $('<input />')
-		.attr('id', 'xpath')
 		.attr('autocomplete', 'off')
 		.val('//*')
-		.insertBefore(source);
+		.appendTo(container);
 	var nodes = {};
 	
 	// Add 'xpath-index' attribute to matchable nodes:

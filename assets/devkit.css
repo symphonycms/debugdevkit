@@ -37,7 +37,10 @@
 	Source
 ---------------------------------------------------------------------------------*/
 	
-	#source input {
+	#content {
+		top: 40px;
+	}
+	#input {
 		background: hsl(210, 5%, 15%);
 		border-bottom: 1px solid hsl(210, 5%, 20%);
 		color: hsl(0, 0%, 80%);
@@ -50,8 +53,9 @@
 		right: 270px;
 		top: 0;
 	}
-	#content {
-		top: 40px;
+	#input input {
+		background: transparent;
+		width: 100%;
 	}
 	
 	#source pre {
@@ -107,6 +111,7 @@
 	}
 	
 	#source pre line content {
+		cursor: text;
 		display: table-cell;
 		padding: 0 20px 0 0;
 	}

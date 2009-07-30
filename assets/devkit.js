@@ -390,6 +390,10 @@
 				if (match.nodeType === 2) {
 					index += Array.prototype.indexOf.call(match.ownerElement.attributes, match);
 					index -= match.ownerElement.attributes.length;
+					
+					// Sometimes an attribute thinks it's the first
+					// node, it can't be, so make it 1:
+					if (index <= 0) index = 1;
 				}
 				
 				jQuery.each(nodes[index], function() {
@@ -441,6 +445,8 @@
 			else return true;
 			
 			if (index >= 0) {
+				node.attr('index', index);
+				
 				if (nodes[index]) {
 					nodes[index].push(node);
 				}

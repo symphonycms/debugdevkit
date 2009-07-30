@@ -320,7 +320,8 @@
 	
 	function XPathMatcher(source, session) {
 		var self = this;
-		var index = -1, in_text = false, in_document = false;
+		var index = -1, last_tag_index = -1;
+		var in_text = false, in_document = false;
 		var source_document  = new DOMParser()
 			.parseFromString(source.text(), 'text/xml');
 		var container = jQuery('<div />')
@@ -335,6 +336,9 @@
 			.insertBefore('#content')
 			.hide();
 		var nodes = {};
+		var elements = [];
+		var attributes = [];
+		var texts = [];
 		
 		self.refresh = function() {
 			var value = session.get('xpath');
@@ -378,7 +382,7 @@
 			
 			while (match = matches.iterateNext()) {
 				var index = source_document.evaluate(
-					'count(ancestor::* | preceding::* | ancestor::* /@* | preceding::* /@* | preceding::text())',
+					'count((ancestor::* | preceding::* | ancestor::* /@* | preceding::* /@* | preceding::text())[not(comment())])',
 					match, resolver, 1, null
 				).numberValue;
 	 			
@@ -396,11 +400,19 @@
 			return true;
 		};
 		
-		source.find('.tag, .attribute, .text').each(function() {
+		source.find('.tag, .attribute, .text, .cdata').each(function() {
 			var node = jQuery(this);
 			
 			if (node.is('.tag.open')) {
+				if (node.text().match(/^[^<]/)) {
+					nodes[last_tag_index].push(node);
+					in_text = false;
+					in_document = true;
+					return true;
+				}
+				
 				index += 1;
+				last_tag_index = index;
 				in_text = false;
 				in_document = true;
 			}
@@ -410,7 +422,7 @@
 				return true;
 			}
 			
-			else if (in_document && node.is('.text')) {
+			else if (in_document && node.is('.text, .cdata')) {
 				if (!in_text) index += 1;
 				
 				in_text = true;
@@ -429,7 +441,13 @@
 			else return true;
 			
 			if (index >= 0) {
-				nodes[index] = [node];
+				if (nodes[index]) {
+					nodes[index].push(node);
+				}
+				
+				else {
+					nodes[index] = [node];
+				}
 				
 				// End tag:
 				if (node.is('.tag.open[handle]')) {

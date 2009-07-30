@@ -1,17 +1,248 @@
-jQuery(document).ready(function() {
-	var $ = jQuery;
-	var source = $('#source pre');
+/*-----------------------------------------------------------------------------
+	Session handler:
+-----------------------------------------------------------------------------*/
+	
+	function Session(parent) {
+		var self = this;
+		var current = '';
+		var params = {};
+		
+		self.refresh = function() {
+			if (current == location.hash) return true;
+			
+			current = location.hash;
+			params = {};
+			
+			jQuery.each(current.slice(1).split('&'), function(index, param) {
+				param = decodeURIComponent(param);
+				
+				if (!/^([a-z]+)\-(.+)$/.test(param)) return true;
+				
+				var bits = /^([a-z]+)\-(.+)$/.exec(param);
+				var value = bits.pop(), name = bits.pop();
+				
+				params[name] = value;
+			});
+			
+			jQuery(parent).trigger('sessionupdate');
+		};
+		
+		self.get = function(name) {
+			return params[name];
+		};
+		
+		self.set = function(name, value) {
+			var bits = [];
+			
+			if (value != null) {
+				params[name] = value;
+			}
+			
+			else {
+				delete params[name];
+			}
+			
+			jQuery.each(params, function(name, value) {
+				bits.push(encodeURIComponent(name + '-' + value));
+			});
+			
+			location.hash = bits.join('&');
+			self.refresh();
+		};
+		
+		setInterval(self.refresh, 10);
+		
+		return self;
+	};
+	
+/*-----------------------------------------------------------------------------
+	Line highlighting:
+-----------------------------------------------------------------------------*/
+	
+	function LineHighlighter(source, session) {
+		var self = this;
+		
+		self.action = null;
+		self.jumped = false;
+		self.from = null;
+		self.to = null;
+		
+		self.refresh = function() {
+			var value = session.get('line');
+			
+			if (value) {
+				var values = value.split(',');
+				
+				self.action = 'selected';
+				self.clear();
+				
+				while (values.length) {
+					var value = values.shift();
+					var bits = /([0-9]+)(-([0-9]+))?/.exec(value);
+					
+					if (bits[3] == undefined) {
+						self.from = parseInt(bits[1]);
+						self.to = parseInt(bits[1]);
+					}
+					
+					else {
+						self.from = parseInt(bits[1]);
+						self.to = parseInt(bits[3]);
+					}
+					
+					self.draw(self.from, self.to);
+					source.addClass('selected');
+				}
+			}
+			
+			else {
+				self.clear();
+			}
+			
+			self.jumped = false;
+		};
+		
+		self.clear = function() {
+			source.removeClass('selected');
+			source.find('line')
+				.removeClass('selected selecting deselecting');
+		};
+		
+		self.draw = function() {
+			var from = Math.min(self.from, self.to);
+			var to = Math.max(self.from, self.to);
+			var selector = 'line';
+			var index_from = from - 2;
+			var index_to = (to - from) + 1;
+			
+			if (index_from >= 0) {
+				selector = selector + ':gt(' + index_from + ')';
+			}
+			
+			selector = selector + ':lt(' + index_to + ')';
+			
+			source.find(selector).addClass(self.action);
+		};
+		
+	/*-------------------------------------------------------------------------
+		Drag handlers:
+	-------------------------------------------------------------------------*/
+		
+		self.drag_ignore = function() {
+			return false;
+		};
+		
+		self.drag_start = function() {
+			var line = jQuery(this).parent();
+			
+			source
+				.bind('mousedown', self.drag_ignore);
+			source.find('line')
+				.bind('mouseover', self.drag_select)
+				.bind('mouseup', self.drag_stop);
+			
+			self.action = 'selecting';
+			self.to = self.from = parseInt(line.attr('id'));
+			
+			if (line.hasClass('selected')) {
+				self.action = 'deselecting';
+			}
+			
+			self.draw();
+			
+			return false;
+		};
+		
+		self.drag_select = function() {
+			var line = jQuery(this);
+			
+			source.find('.selecting, .deselecting')
+				.removeClass('selecting deselecting');
+			
+			self.to = parseInt(line.attr('id'));
+			self.draw();
+			
+			return false;
+		};
+		
+		self.drag_stop = function() {
+			var last = null, hash = '';
+			var selection = []
+			
+			source.addClass('selected');
+			source.find('.selecting')
+				.removeClass('selecting')
+				.addClass('selected');
+			
+			source.find('.deselecting')
+				.removeClass('deselecting selected');
+			
+			source
+				.unbind('mousedown', self.drag_ignore);
+			source.find('line')
+				.unbind('mouseover', self.drag_select)
+				.unbind('mouseup', self.drag_stop);
+			
+			source.find('line.selected').each(function() {
+				var id = parseInt(jQuery(this).attr('id'));
+				
+				if (selection.indexOf(id) == -1) {
+					selection.push(id);
+				}
+			});
+			
+			selection.sort(function(a, b) {
+				return (a < b ? -1 : 1);
+			});
+			
+			jQuery.each(selection, function(index, value) {
+				if (last != value - 1) {
+					if (last != null) hash = hash + ',';
+					
+					hash = hash + value;
+				}
+				
+				else if (selection[index + 1] != value + 1) {
+					hash = hash + '-' + value;
+				}
+				
+				last = value;
+			});
+			
+			if (hash == '') session.set('line', null);
+			else session.set('line', hash);
+			
+			return false;
+		};
+		
+		source.bind('sessionupdate', self.refresh);
+		source.find('line marker')
+			.bind('mousedown', self.drag_start);
+		
+		return this;
+	};
 	
 /*-----------------------------------------------------------------------------
 	Tag matching:
 -----------------------------------------------------------------------------*/
 	
-	(function() {
-		var depth = 0, stack = [];
+	function TagMatcher(source, session) {
+		var self = this;
+		
+		self.depth = 0;
+		self.stack = [];
+		
+		self.refresh = function() {
+			var handle = session.get('tag');
+			
+			if (handle) {
+				source.find('.tag[handle = "' + handle + '"]:first').click();
+			}
+		};
 		
 		// Create tag mapping attributes:
 		source.find('.tag').each(function(position) {
-			var tag = $(this);
+			var tag = jQuery(this);
 			
 			// Self closing:
 			if (tag.text().match(/\/>$/)) return;
@@ -21,34 +252,36 @@ jQuery(document).ready(function() {
 			
 			// Closing:
 			else if (tag.hasClass('.close')) {
-				tag.attr('handle', stack.pop());
+				tag.attr('handle', self.stack.pop());
 				tag.attr('id', 'close-' + tag.attr('handle'));
-				depth = depth - 1;
+				self.depth = self.depth - 1;
 			}
 			
 			// Opening:
 			else {
-				depth = depth + 1;
-				tag.attr('handle', depth + '-' + position);
+				self.depth = self.depth + 1;
+				tag.attr('handle', self.depth + '-' + position);
 				tag.attr('id', 'open-' + tag.attr('handle'));
-				stack.push(tag.attr('handle'));
+				self.stack.push(tag.attr('handle'));
 			}
 		});
 		
 		source.find('.tag[handle]').bind('click', function() {
-			var current = $(this), handle = current.attr('handle');
+			var current = jQuery(this), handle = current.attr('handle');
 			var opposite = source.find('.tag[handle = "' + handle + '"]').not(current);
 			
 			if (current.is('.tag-match')) return false;
+			
+			session.set('tag', handle);
 			
 			source.find('.tag-match')
 				.removeClass('tag-match');
 			current.addClass('tag-match');
 			opposite.addClass('tag-match');
 			
-			// Jump to opposite:
+			// self.jumped to opposite:
 			current.bind('mousedown', function(event) {
-				$('#content').scrollTo(opposite, {
+				jQuery('#content').scrollTo(opposite, {
 					offset: (0 - event.clientY) + (opposite.height() / 2) + 40
 				});
 				
@@ -56,7 +289,7 @@ jQuery(document).ready(function() {
 			});
 			
 			opposite.bind('mousedown', function(event) {
-				$('#content').scrollTo(current, {
+				jQuery('#content').scrollTo(current, {
 					offset: (0 - event.clientY) + (current.height() / 2) + 40
 				});
 				
@@ -65,6 +298,7 @@ jQuery(document).ready(function() {
 			
 			// Clear:
 			source.bind('mousedown', function() {
+				session.set('tag', null);
 				source.unbind('mousedown');
 				current.removeClass('tag-match').unbind('mousedown');
 				opposite.removeClass('tag-match').unbind('mousedown');
@@ -72,32 +306,96 @@ jQuery(document).ready(function() {
 			
 			return false;
 		});
-	})();
+		
+		source.bind('sessionupdate', self.refresh);
+		
+		return self;
+	};
 	
 /*-----------------------------------------------------------------------------
 	XPath highlighting:
 -----------------------------------------------------------------------------*/
 	
-	(function() {
+	function XPathMatcher(source, session) {
+		var self = this;
 		var index = -1, in_text = false, in_document = false;
 		var source_document  = new DOMParser()
 			.parseFromString(source.text(), 'text/xml');
-		var container = $('<div />')
+		var container = jQuery('<div />')
 			.attr('id', 'input')
 			.insertBefore('#content');
-		var input = $('<input />')
+		var input = jQuery('<input />')
 			.attr('autocomplete', 'off')
 			.val('//*')
 			.appendTo(container);
-		var output = $('<div />')
+		var output = jQuery('<div />')
 			.attr('id', 'output')
 			.insertBefore('#content')
 			.hide();
 		var nodes = {};
 		
-		// Add 'xpath-index' attribute to matchable nodes:
+		self.refresh = function() {
+			var value = session.get('xpath');
+			
+			//console.log(encodeURIComponent('//*[contains(., "foo&bar")]'));
+			
+			if (value) {
+				input.val(value);
+				self.execute();
+			}
+		};
+		
+		self.execute = function() {
+			source.find('.xpath-match').removeClass('xpath-match');
+			
+			var parent = source_document.documentElement;
+			var resolver = source_document.createNSResolver(parent);
+			var matches = source_document.evaluate(
+				input.val(), parent, resolver, 0, null
+			);
+			
+			if (matches.resultType < 4) {
+				var value = null, type = null;
+				
+				switch (matches.resultType) {
+					case 1: value = matches.numberValue; break;
+					case 2: value = matches.stringValue; break;
+					case 3: value = matches.booleanValue; break;
+				}
+				
+				if (value == null) return true;
+				
+				output.text(value).fadeIn(150);
+				
+				setTimeout(function() {
+					output.fadeOut(250);
+				}, 3000);
+				
+				return true;
+			}
+			
+			while (match = matches.iterateNext()) {
+				var index = source_document.evaluate(
+					'count(ancestor::* | preceding::* | ancestor::* /@* | preceding::* /@* | preceding::text())',
+					match, resolver, 1, null
+				).numberValue;
+	 			
+				// Attributes are offset:
+				if (match.nodeType === 2) {
+					index += Array.prototype.indexOf.call(match.ownerElement.attributes, match);
+					index -= match.ownerElement.attributes.length;
+				}
+				
+				jQuery.each(nodes[index], function() {
+					jQuery(this).not(':empty').addClass('xpath-match');
+				});
+			}
+			
+			return true;
+		};
+		
 		source.find('.tag, .attribute, .text').each(function() {
-			var node = $(this);
+			var node = jQuery(this);
 			
 			if (node.is('.tag.open')) {
 				index += 1;
@@ -117,7 +415,6 @@ jQuery(document).ready(function() {
 			}
 			
 			else if (in_document && node.is('.attribute')) {
-				// Not selectable:
 				if (/^xmlns:?/i.test(node.text())) {
 					in_text = false;
 					return true;
@@ -148,50 +445,11 @@ jQuery(document).ready(function() {
 				input.change(); return true;
 			}
 			
-			source.find('.xpath-match').removeClass('xpath-match');
-			console.log(this.value);
-			var parent = source_document.documentElement;
-			var resolver = source_document.createNSResolver(parent);
-			var matches = source_document.evaluate(
-				this.value, parent, resolver, 0, null
-			);
-			
-			if (matches.resultType < 4) {
-				var value = null, type = null;
-				
-				switch (matches.resultType) {
-					case 1: value = matches.numberValue; break;
-					case 2: value = matches.stringValue; break;
-					case 3: value = matches.booleanValue; break;
-				}
-				
-				if (value == null) return false;
-				
-				output.text(value).fadeIn(150);
-				
-				setTimeout(function() {
-					output.fadeOut(250);
-				}, 3000);
-				
-				return false;
+			if (session.get('xpath') != input.val()) {
+				session.set('xpath', input.val());
 			}
 			
-			while (match = matches.iterateNext()) {
-				var index = source_document.evaluate(
-					'count(ancestor::* | preceding::* | ancestor::* /@* | preceding::* /@* | preceding::text())',
-					match, resolver, 1, null
-				).numberValue;
-	 			
-				// Attributes are offset:
-				if (match.nodeType === 2) {
-					index += Array.prototype.indexOf.call(match.ownerElement.attributes, match);
-					index -= match.ownerElement.attributes.length;
-				}
-				
-				$.each(nodes[index], function() {
-					$(this).not(':empty').addClass('xpath-match');
-				});
-			}
+			else self.execute();
 			
 			return false;
 		});
@@ -201,202 +459,21 @@ jQuery(document).ready(function() {
 			
 			source.find('.xpath-match').removeClass('xpath-match');
 		});
-	})();
+		
+		source.bind('sessionupdate', self.refresh);
+	};
 	
-/*-----------------------------------------------------------------------------
-	Line highlighting:
------------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*/
 	
-	(function() {
-		var target = {
-			hash:		'',
-			jump:		true,
-			
-			monitor:	function() {
-				if (target.hash != location.hash) {
-					target.hash = location.hash;
-					
-					// Change highlight:
-					if (target.hash.match(/^#line-(,?[0-9]+(-[0-9]+)?)+$/)) {
-						highlight.read_hash(target.hash);
-					}
-					
-					else if (!target.jump) {
-						highlight.clear_all();
-					}
-					
-					// Scroll to it:
-					if (target.jump) {
-						$('#content').scrollTo(
-							source.find('line.selected'),
-							{
-								offset: 0 - ($(window).height() / 4)
-							}
-						);
-					}
-				}
-				
-				target.jump = false;
-			}
-		};
+	jQuery(document).ready(function() {
+		var source = jQuery('#source pre');
+		var session = new Session(source);
 		
-		var highlight = {
-			action:		null,
-			from:		null,
-			to:			null,
-			
-			read_hash:	function(hash) {
-				var values = hash.replace(/^#line-,?/, '').split(',');
-				
-				highlight.action = 'selected';
-				highlight.clear_all();
-				
-				while (values.length) {
-					var value = values.shift();
-					var bits = /([0-9]+)(-([0-9]+))?/.exec(value);
-					
-					if (bits[3] == undefined) {
-						from = parseInt(bits[1]);
-						to = parseInt(bits[1]);
-					}
-					
-					else {
-						from = parseInt(bits[1]);
-						to = parseInt(bits[3]);
-					}
-					
-					highlight.draw_selection(from, to);
-					source.addClass('selected');
-				}
-			},
-			
-			write_hash:	function() {
-				var last = null, hash = '';
-				var selection = []
-				
-				source.find('line.selected').each(function() {
-					var id = parseInt($(this).attr('id'));
-					
-					if (selection.indexOf(id) == -1) {
-						selection.push(id);
-					}
-				});
-				
-				selection.sort(function(a, b) {
-					return (a < b ? -1 : 1);
-				});
-				
-				$.each(selection, function(index, value) {
-					if (last != value - 1) {
-						if (last != null) hash = hash + ',';
-						
-						hash = hash + value;
-					}
-					
-					else if (selection[index + 1] != value + 1) {
-						hash = hash + '-' + value;
-					}
-					
-					last = value;
-				});
-				
-				if (hash == '') {
-					location.replace('#');
-				}
-				
-				else {
-					location.replace('#line-' + hash);
-				}
-			},
-			
-			clear_all:	function() {
-				source.removeClass('selected');
-				source.find('line')
-					.removeClass('selected selecting deselecting');
-			},
-			
-			draw_selection:	function(from, to) {
-				var selector = 'line';
-				var index_from = from - 2;
-				var index_to = (to - from) + 1;
-				
-				if (index_from >= 0) {
-					selector = selector + ':gt(' + index_from + ')';
-				}
-				
-				selector = selector + ':lt(' + index_to + ')';
-				
-				source.find(selector).addClass(highlight.action);
-			},
-			
-			event_ignore:		function() {
-				return false;
-			},
-			
-			event_start:	function() {
-				var line = $(this).parent();
-				
-				source
-					.bind('mousedown', highlight.event_ignore);
-				source.find('line')
-					.bind('mouseover', highlight.event_toggle)
-					.bind('mouseup', highlight.event_stop);
-				
-				highlight.from = parseInt(line.attr('id'));
-				highlight.to = highlight.from;
-				highlight.action = 'selecting';
-				
-				if (line.hasClass('selected')) {
-					highlight.action = 'deselecting';
-				}
-				
-				highlight.draw_selection(
-					highlight.from, highlight.to
-				);
-				
-				return false;
-			},
-			
-			event_toggle:	function() {
-				var line = $(this);
-				
-				source.find('.selecting, .deselecting')
-					.removeClass('selecting deselecting');
-				
-				highlight.to = parseInt(line.attr('id'));
-				highlight.draw_selection(
-					Math.min(highlight.from, highlight.to),
-					Math.max(highlight.from, highlight.to)
-				);
-				
-				return false;
-			},
-			
-			event_stop:		function() {
-				source.addClass('selected');
-				source.find('.selecting')
-					.removeClass('selecting')
-					.addClass('selected');
-				
-				source.find('.deselecting')
-					.removeClass('deselecting selected');
-				
-				source
-					.unbind('mousedown', highlight.event_ignore);
-				source.find('line')
-					.unbind('mouseover', highlight.event_toggle)
-					.unbind('mouseup', highlight.event_stop);
-				
-				highlight.write_hash();
-				
-				return false;
-			}
-		};
+		TagMatcher(source, session);
+		XPathMatcher(source, session);
+		LineHighlighter(source, session);
 		
-		// Track target changes:
-		setInterval(target.monitor, 10);
-		
-		source.find('line marker')
-			.bind('mousedown', highlight.event_start);
-	})();
-});
+		session.refresh();
+	});
+	
+/*---------------------------------------------------------------------------*/

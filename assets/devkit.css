@@ -1,45 +1,34 @@
 /*---------------------------------------------------------------------------------
-	Content
----------------------------------------------------------------------------------*/
-	
-	#content table {
-		border-spacing: 0;
-		color: hsl(0, 0%, 50%);
-		font: 115% monospace;
-		padding: 20px 0;
-		table-layout: fixed;
-	}
-	#content table th {
-		vertical-align: top;
-	}
-	#content table td {
-		padding: 0 20px 0 0;
-		vertical-align: top;
-	}
-	
-/*---------------------------------------------------------------------------------
 	Params
 ---------------------------------------------------------------------------------*/
 	
+	#params table {
+		border-spacing: 0;
+		color: hsl(0, 0%, 50%);
+		font: 105% monospace;
+		padding: 20px 0;
+		table-layout: fixed;
+	}
 	#params table th {
 		color: hsl(0, 0%, 80%);
 		clear: both;
+		line-height: 160%;
+		padding: 0 20px 0 20px;
 		text-align: left;
-		padding: 0 10px 0 20px;
 		white-space: nowrap;
 		vertical-align: top;
 	}
 	#params table td {
-		color: hsl(210, 50%, 80%);
+		color: hsl(210, 50%, 70%);
+		line-height: 160%;
+		padding: 0 20px 0 0;
+		vertical-align: top;
 	}
 	
 /*---------------------------------------------------------------------------------
 	Source
 ---------------------------------------------------------------------------------*/
 	
-	#content {
-		top: 41px;
-	}
 	#input {
 		background: hsl(210, 5%, 15%);
 		border-bottom: 1px solid hsl(210, 5%, 20%);
@@ -68,6 +57,9 @@
 		padding: 0 20px;
 		position: fixed;
 		right: 270px;
+	}
+	#output + #content {
+		top: 41px;
 	}
 	
 	#source pre {

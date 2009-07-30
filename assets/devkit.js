@@ -267,6 +267,8 @@
 		});
 		
 		source.find('.tag[handle]').bind('click', function() {
+			if (event.button != 0) return true;
+			
 			var current = jQuery(this), handle = current.attr('handle');
 			var opposite = source.find('.tag[handle = "' + handle + '"]').not(current);
 			
@@ -467,13 +469,16 @@
 	
 	jQuery(document).ready(function() {
 		var source = jQuery('#source pre');
-		var session = new Session(source);
 		
-		TagMatcher(source, session);
-		XPathMatcher(source, session);
-		LineHighlighter(source, session);
-		
-		session.refresh();
+		if (source.length) {
+			var session = new Session(source);
+			
+			TagMatcher(source, session);
+			XPathMatcher(source, session);
+			LineHighlighter(source, session);
+			
+			session.refresh();
+		}
 	});
 	
 /*---------------------------------------------------------------------------*/

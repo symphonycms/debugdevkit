@@ -266,7 +266,7 @@
 			}
 		});
 		
-		source.find('.tag[handle]').bind('click', function() {
+		source.find('.tag[handle]').bind('click', function(event) {
 			if (event.button != 0) return true;
 			
 			var current = jQuery(this), handle = current.attr('handle');

@@ -155,7 +155,7 @@
 				$output = $language->process($source)->output;
 				$output = $format->process($output);
 				
-				file_put_contents($this->cache_file, $output);
+				if ($this->cache) file_put_contents($this->cache_file, $output);
 			}
 			
 			else {

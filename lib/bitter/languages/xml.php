@@ -133,7 +133,7 @@
 		Bitter::rule(
 			Bitter::id('xml-tag-close-valid'),
 			Bitter::tag('tag close'),
-			Bitter::capture('</[a-z][a-z0-9_\-\:]*>')
+			Bitter::capture('</[a-z][a-z0-9_\-\:]*>', 'i')
 		),
 		Bitter::rule(
 			Bitter::id('xml-declaration-error'),

@@ -36,7 +36,7 @@
 		}
 		
 		public function frontendDevKitResolve($context) {
-			if (isset($_GET['debug'])) {
+			if (false or isset($_GET['debug'])) {
 				require_once(EXTENSIONS . '/debugdevkit/content/content.debug.php');
 				
 				$context['devkit'] = new Content_DebugDevKit_Debug();
@@ -53,8 +53,6 @@
 		}
 		
 		public function manipulateDevKitNavigation($context) {
-			header('content-type: text/plain');
-			
 			$xml = $context['xml'];
 			$item = $xml->createElement('item');
 			$item->setAttribute('name', __('Debug'));

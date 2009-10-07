@@ -263,21 +263,13 @@
 		self.jump = function(event) {
 			if (event.button != 0 || event.metaKey == true) return true;
 			
-			var tags = source.find('.tag-match');
-			var tag = this, next = null;
+			var handle = jQuery(this).attr('handle');
+			var target = source.find('.tag[handle = "' + handle + '"]').not(this);
 			
-			tags.each(function(index) {
-				if (this == tag) {
-					if (tags[index + 1]) next = jQuery(tags[index + 1]);
-					
-					return false;
-				}
-			});
+			if (!target) return false;
 			
-			if (!next) next = tags.filter(':first');
-			
-			jQuery('#content').scrollTo(next, {
-				offset: (0 - event.clientY) + (next.height() / 2) + 40
+			jQuery('#content').scrollTo(target, {
+				offset: (0 - event.clientY) + (target.height() / 2) + 40
 			});
 			
 			return false;
@@ -343,13 +335,11 @@
 			// Self closing
 			else if (tag.text().match(/\/>$/)) {
 				tag.attr('handle', self.depth + 'x' + position);
-				tag.attr('id', 'open-' + tag.attr('handle'));
 			}
 			
 			// Closing:
 			else if (tag.hasClass('.close')) {
 				tag.attr('handle', self.stack.pop());
-				tag.attr('id', 'close-' + tag.attr('handle'));
 				self.depth = self.depth - 1;
 			}
 			
@@ -357,7 +347,6 @@
 			else {
 				self.depth = self.depth + 1;
 				tag.attr('handle', self.depth + 'x' + position);
-				tag.attr('id', 'open-' + tag.attr('handle'));
 				self.stack.push(tag.attr('handle'));
 			}
 		});

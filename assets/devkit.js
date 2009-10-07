@@ -43,7 +43,7 @@
 			}
 			
 			jQuery.each(params, function(name, value) {
-				bits.push(encodeURIComponent(name + '-' + value));
+				if (value) bits.push(encodeURIComponent(name + '-' + value));
 			});
 			
 			location.hash = bits.join('&');
@@ -255,6 +255,8 @@
 		};
 		
 		self.ignore = function(event) {
+			if (jQuery(this).is('.tag-match')) return false;
+			
 			return event.button != 0 || event.metaKey != true;
 		};
 		
@@ -275,7 +277,7 @@
 			if (!next) next = tags.filter(':first');
 			
 			jQuery('#content').scrollTo(next, {
-				offset: (0 - event.clientY) + (next.height() / 2)
+				offset: (0 - event.clientY) + (next.height() / 2) + 40
 			});
 			
 			return false;
@@ -285,15 +287,22 @@
 			if (event.button != 0 || event.metaKey != true) return true;
 			
 			var handle = jQuery(this).attr('handle');
-			var handles = jQuery(session.get('tag').split('-'));
+			var handles = session.get('tag');
 			
-			handles = handles.map(function() {
-				if (this == handle) return null;
+			if (handles) {
+				handles = jQuery(handles.split('-'));
+				handles = handles.map(function() {
+					if (this == handle) return null;
+					
+					return this;
+				});
 				
-				return this;
-			});
+				session.set('tag', handles.get().join('-'));
+			}
 			
-			session.set('tag', handles.get().join('-'));
+			else {
+				session.set('tag', '');
+			}
 			
 			return false;
 		}
@@ -545,7 +554,7 @@
 			var session = new Session(source);
 			
 			TagMatcher(source, session);
-			//XPathMatcher(source, session);
+			XPathMatcher(source, session);
 			LineHighlighter(source, session);
 			
 			session.refresh();

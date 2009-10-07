@@ -233,22 +233,109 @@
 		self.stack = [];
 		
 		self.refresh = function() {
-			var handle = session.get('tag');
+			var handles = session.get('tag');
 			
-			if (handle) {
-				source.find('.tag[handle = "' + handle + '"]:first').click();
+			source.find('.tag-match')
+				.removeClass('tag-match')
+				.bind('click', self.match)
+				.unbind('click', self.unmatch)
+				.unbind('click', self.jump);
+			
+			if (!handles) return;
+			
+			jQuery(handles.split('-')).each(function() {
+				var handle = this;
+				
+				source.find('.tag[handle = "' + handle + '"]')
+					.addClass('tag-match')
+					.unbind('click', self.match)
+					.bind('click', self.unmatch)
+					.bind('click', self.jump);
+			});
+		};
+		
+		self.ignore = function(event) {
+			return event.button != 0 || event.metaKey != true;
+		};
+		
+		self.jump = function(event) {
+			if (event.button != 0 || event.metaKey == true) return true;
+			
+			var tags = source.find('.tag-match');
+			var tag = this, next = null;
+			
+			tags.each(function(index) {
+				if (this == tag) {
+					if (tags[index + 1]) next = jQuery(tags[index + 1]);
+					
+					return false;
+				}
+			});
+			
+			if (!next) next = tags.filter(':first');
+			
+			jQuery('#content').scrollTo(next, {
+				offset: (0 - event.clientY) + (next.height() / 2)
+			});
+			
+			return false;
+		}
+		
+		self.unmatch = function(event) {
+			if (event.button != 0 || event.metaKey != true) return true;
+			
+			var handle = jQuery(this).attr('handle');
+			var handles = jQuery(session.get('tag').split('-'));
+			
+			handles = handles.map(function() {
+				if (this == handle) return null;
+				
+				return this;
+			});
+			
+			session.set('tag', handles.get().join('-'));
+			
+			return false;
+		}
+		
+		self.match = function(event) {
+			if (event.button != 0 || event.metaKey != true) return true;
+			
+			var handle = jQuery(this).attr('handle');
+			var handles = session.get('tag');
+			
+			if (handles) {
+				var append = true;
+				
+				handles = jQuery(handles.split('-'));
+				handles.each(function() {
+					if (this == handle) return append = false;
+				});
+				
+				if (append) handles.push(handle);
+				
+				session.set('tag', handles.get().join('-'));
 			}
+			
+			else {
+				session.set('tag', handle);
+			}
+			
+			return false;
 		};
 		
 		// Create tag mapping attributes:
 		source.find('.tag').each(function(position) {
 			var tag = jQuery(this);
 			
-			// Self closing:
-			if (tag.text().match(/\/>$/)) return;
-			
 			// Tag content:
-			else if (tag.text().match(/[^>]$/)) return;
+			if (tag.text().match(/[^>]$/)) return;
+			
+			// Self closing
+			else if (tag.text().match(/\/>$/)) {
+				tag.attr('handle', self.depth + 'x' + position);
+				tag.attr('id', 'open-' + tag.attr('handle'));
+			}
 			
 			// Closing:
 			else if (tag.hasClass('.close')) {
@@ -260,55 +347,15 @@
 			// Opening:
 			else {
 				self.depth = self.depth + 1;
-				tag.attr('handle', self.depth + '-' + position);
+				tag.attr('handle', self.depth + 'x' + position);
 				tag.attr('id', 'open-' + tag.attr('handle'));
 				self.stack.push(tag.attr('handle'));
 			}
 		});
 		
-		source.find('.tag[handle]').bind('click', function(event) {
-			if (event.button != 0) return true;
-			
-			var current = jQuery(this), handle = current.attr('handle');
-			var opposite = source.find('.tag[handle = "' + handle + '"]').not(current);
-			
-			if (current.is('.tag-match')) return false;
-			
-			session.set('tag', handle);
-			
-			source.find('.tag-match')
-				.removeClass('tag-match');
-			current.addClass('tag-match');
-			opposite.addClass('tag-match');
-			
-			// self.jumped to opposite:
-			current.bind('mousedown', function(event) {
-				jQuery('#content').scrollTo(opposite, {
-					offset: (0 - event.clientY) + (opposite.height() / 2) + 40
-				});
-				
-				return false;
-			});
-			
-			opposite.bind('mousedown', function(event) {
-				jQuery('#content').scrollTo(current, {
-					offset: (0 - event.clientY) + (current.height() / 2) + 40
-				});
-				
-				return false;
-			});
-			
-			// Clear:
-			source.bind('mousedown', function() {
-				session.set('tag', null);
-				source.unbind('mousedown');
-				current.removeClass('tag-match').unbind('mousedown');
-				opposite.removeClass('tag-match').unbind('mousedown');
-			});
-			
-			return false;
-		});
-		
+		source.find('.tag[handle]')
+			.bind('click', self.match)
+			.bind('mousedown', self.ignore);
 		source.bind('sessionupdate', self.refresh);
 		
 		return self;
@@ -498,7 +545,7 @@
 			var session = new Session(source);
 			
 			TagMatcher(source, session);
-			XPathMatcher(source, session);
+			//XPathMatcher(source, session);
 			LineHighlighter(source, session);
 			
 			session.refresh();

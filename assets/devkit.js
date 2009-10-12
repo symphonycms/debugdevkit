@@ -384,13 +384,81 @@
 		var elements = [];
 		var attributes = [];
 		var texts = [];
+		var initialised = false;
+		
+		self.initialise = function() {
+			if (initialised) return true;
+			
+			initialised = true;
+			
+			source.find('.tag, .attribute, .text, .cdata').each(function() {
+				var node = jQuery(this);
+				
+				if (node.is('.tag.open')) {
+					if (node.text().match(/^[^<]/)) {
+						nodes[last_tag_index].push(node);
+						in_text = false;
+						in_document = true;
+						return true;
+					}
+					
+					index += 1;
+					last_tag_index = index;
+					in_text = false;
+					in_document = true;
+				}
+				
+				else if (node.is('.tag.close')) {
+					in_text = false;
+					return true;
+				}
+				
+				else if (in_document && node.is('.text, .cdata')) {
+					if (!in_text) index += 1;
+					
+					in_text = true;
+				}
+				
+				else if (in_document && node.is('.attribute')) {
+					if (/^xmlns:?/i.test(node.text())) {
+						in_text = false;
+						return true;
+					}
+					
+					index += 1;
+					in_text = false;
+				}
+				
+				else return true;
+				
+				if (index >= 0) {
+					node.attr('index', index);
+					
+					if (nodes[index]) {
+						nodes[index].push(node);
+					}
+					
+					else {
+						nodes[index] = [node];
+					}
+					
+					// End tag:
+					if (node.is('.tag.open[handle]')) {
+						nodes[index].push(source.find(
+							'.tag.close[handle = "'
+							+ node.attr('handle')
+							+ '"]'
+						));
+					}
+				}
+			});
+		};
 		
 		self.refresh = function() {
 			var value = session.get('xpath');
 			
-			//console.log(encodeURIComponent('//*[contains(., "foo&bar")]'));
-			
 			if (value) {
+				self.initialise();
 				input.val(value);
 				self.execute();
 			}
@@ -449,66 +517,9 @@
 			return true;
 		};
 		
-		source.find('.tag, .attribute, .text, .cdata').each(function() {
-			var node = jQuery(this);
-			
-			if (node.is('.tag.open')) {
-				if (node.text().match(/^[^<]/)) {
-					nodes[last_tag_index].push(node);
-					in_text = false;
-					in_document = true;
-					return true;
-				}
-				
-				index += 1;
-				last_tag_index = index;
-				in_text = false;
-				in_document = true;
-			}
-			
-			else if (node.is('.tag.close')) {
-				in_text = false;
-				return true;
-			}
-			
-			else if (in_document && node.is('.text, .cdata')) {
-				if (!in_text) index += 1;
-				
-				in_text = true;
-			}
-			
-			else if (in_document && node.is('.attribute')) {
-				if (/^xmlns:?/i.test(node.text())) {
-					in_text = false;
-					return true;
-				}
-				
-				index += 1;
-				in_text = false;
-			}
-			
-			else return true;
-			
-			if (index >= 0) {
-				node.attr('index', index);
-				
-				if (nodes[index]) {
-					nodes[index].push(node);
-				}
-				
-				else {
-					nodes[index] = [node];
-				}
-				
-				// End tag:
-				if (node.is('.tag.open[handle]')) {
-					nodes[index].push(source.find(
-						'.tag.close[handle = "'
-						+ node.attr('handle')
-						+ '"]'
-					));
-				}
-			}
+		// Initialize on first focus:
+		input.bind('focus', function() {
+			self.initialise();
 		});
 		
 		input.bind('keyup', function(event) {

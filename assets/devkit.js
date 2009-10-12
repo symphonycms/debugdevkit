@@ -231,9 +231,44 @@
 		
 		self.depth = 0;
 		self.stack = [];
+		self.readyTagMatcher = false;
+		
+		self.initialiseTagMatcher = function() {
+			if (self.readyTagMatcher) return true;
+			
+			self.readyTagMatcher = true;
+			
+			// Create tag mapping attributes:
+			source.find('.tag').each(function(position) {
+				var tag = jQuery(this);
+				
+				// Tag content:
+				if (tag.text().match(/[^>]$/)) return;
+				
+				// Self closing
+				else if (tag.text().match(/\/>$/)) {
+					tag.attr('handle', self.depth + 'x' + position);
+				}
+				
+				// Closing:
+				else if (tag.hasClass('.close')) {
+					tag.attr('handle', self.stack.pop());
+					self.depth = self.depth - 1;
+				}
+				
+				// Opening:
+				else {
+					self.depth = self.depth + 1;
+					tag.attr('handle', self.depth + 'x' + position);
+					self.stack.push(tag.attr('handle'));
+				}
+			});
+		};
 		
 		self.refresh = function() {
 			var handles = session.get('tag');
+			
+			self.initialiseTagMatcher();
 			
 			source.find('.tag-match')
 				.removeClass('tag-match')
@@ -302,6 +337,8 @@
 		self.match = function(event) {
 			if (event.button != 0 || event.metaKey != true) return true;
 			
+			self.initialiseTagMatcher();
+			
 			var handle = jQuery(this).attr('handle');
 			var handles = session.get('tag');
 			
@@ -325,33 +362,7 @@
 			return false;
 		};
 		
-		// Create tag mapping attributes:
-		source.find('.tag').each(function(position) {
-			var tag = jQuery(this);
-			
-			// Tag content:
-			if (tag.text().match(/[^>]$/)) return;
-			
-			// Self closing
-			else if (tag.text().match(/\/>$/)) {
-				tag.attr('handle', self.depth + 'x' + position);
-			}
-			
-			// Closing:
-			else if (tag.hasClass('.close')) {
-				tag.attr('handle', self.stack.pop());
-				self.depth = self.depth - 1;
-			}
-			
-			// Opening:
-			else {
-				self.depth = self.depth + 1;
-				tag.attr('handle', self.depth + 'x' + position);
-				self.stack.push(tag.attr('handle'));
-			}
-		});
-		
-		source.find('.tag[handle]')
+		source.find('.tag')
 			.bind('click', self.match)
 			.bind('mousedown', self.ignore);
 		source.bind('sessionupdate', self.refresh);
@@ -384,12 +395,12 @@
 		var elements = [];
 		var attributes = [];
 		var texts = [];
-		var initialised = false;
 		
-		self.initialise = function() {
-			if (initialised) return true;
+		self.readyXPathMatcher = false;
+		self.initialiseXPathMatcher = function() {
+			if (self.readyXPathMatcher) return true;
 			
-			initialised = true;
+			self.readyXPathMatcher = true;
 			
 			source.find('.tag, .attribute, .text, .cdata').each(function() {
 				var node = jQuery(this);
@@ -458,7 +469,7 @@
 			var value = session.get('xpath');
 			
 			if (value) {
-				self.initialise();
+				self.initialiseXPathMatcher();
 				input.val(value);
 				self.execute();
 			}
@@ -519,7 +530,7 @@
 		
 		// Initialize on first focus:
 		input.bind('focus', function() {
-			self.initialise();
+			self.initialiseXPathMatcher();
 		});
 		
 		input.bind('keyup', function(event) {

@@ -550,6 +550,8 @@
 		input.bind('change', function() {
 			if (input.val() != '') return true;
 			
+			session.set('xpath', input.val());
+			
 			source.find('.xpath-match').removeClass('xpath-match');
 		});
 		

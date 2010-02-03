@@ -102,9 +102,10 @@
 			$this->language_name = basename($language);
 			$this->language = Bitter::id($this->language_name);
 			$this->language_file = BITTER_LANGUAGE_PATH . '/' . $this->language_name . '.php';
-			$this->language_time = (integer)@filemtime($this->language_file);
 			
 			if (is_readable($this->language_file)) {
+				$this->language_time = (integer)filemtime($this->language_file);
+				
 				include_once($this->language_file);
 				
 				return true;
@@ -116,9 +117,10 @@
 		public function loadFormat($format) {
 			$this->format_name = basename($format);
 			$this->format_file = BITTER_FORMAT_PATH . '/' . $this->format_name . '.php';
-			$this->format_time = (integer)@filemtime($this->format_file);
 			
 			if (is_readable($this->format_file)) {
+				$this->format_time = (integer)filemtime($this->format_file);
+				
 				$this->format = include_once($this->format_file);
 				
 				return true;
@@ -144,22 +146,37 @@
 				md5($this->format_name),
 				md5($source)
 			));
-			$this->cache_time = (integer)@filemtime($this->cache_file);
-			$this->refresh_time = max($this->language_time, $this->format_time);
 			
-			// Cache is out of date/doesn't exist:
-			if (!$this->cache or !is_readable($this->cache_file) or $this->cache_time < $this->refresh_time) {
+			if (is_readable($this->cache_file)) {
+				$this->cache_time = (integer)filemtime($this->cache_file);
+				$this->refresh_time = max($this->language_time, $this->format_time);
+			}
+			
+			// Use cache:
+			if ($this->cache) {
+				// Cache is stale:
+				if ($this->cache_time <= $this->refresh_time) {
+					$language = $this->language->get();
+					$format = $this->format;
+					
+					$output = $language->process($source)->output;
+					$output = $format->process($output);
+					
+					file_put_contents($this->cache_file, $output);
+				}
+				
+				// Cache is fresh:
+				else {
+					$output = file_get_contents($this->cache_file);
+				}
+			}
+			
+			else {
 				$language = $this->language->get();
 				$format = $this->format;
 				
 				$output = $language->process($source)->output;
 				$output = $format->process($output);
-				
-				if ($this->cache) file_put_contents($this->cache_file, $output);
-			}
-			
-			else {
-				$output = file_get_contents($this->cache_file);
 			}
 			
 			return $output;
@@ -436,8 +453,9 @@
 				
 				if (!empty($this->rules)) {
 					$output .= $this->process($match)->output;
-					
-				} else {
+				}
+				
+				else {
 					$output .= Bitter::encode($match);
 				}
 			}

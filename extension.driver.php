@@ -10,7 +10,7 @@
 		public function about() {
 			return array(
 				'name'			=> 'Debug DevKit',
-				'version'		=> '1.0.5',
+				'version'		=> '1.0.7',
 				'release-date'	=> '2009-12-01',
 				'author'		=> array(
 					'name'			=> 'Rowan Lewis',

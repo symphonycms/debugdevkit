@@ -3,7 +3,7 @@
 A debug panel for Symphony.
 It is part of the Symphony core download package.
 
-- Version: 1.0.6dev
+- Version: 1.0.7
 - Date: **unreleased**
 - Requirements: Symphony 2.0.4 or later
 - Author: Rowan Lewis, rowan@pixelcarnage.com

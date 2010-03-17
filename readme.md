@@ -6,12 +6,12 @@ It is part of the Symphony core download package.
 - Version: 1.0.7
 - Date: **unreleased**
 - Requirements: Symphony 2.0.4 or later
-- Author: Rowan Lewis, rowan@pixelcarnage.com
-- GitHub Repository: <http://github.com/pointybeard/debugdevkit>
+- Author: Rowan Lewis, me@rowanlewis.com
+- GitHub Repository: <http://github.com/rowan-lewis/debugdevkit>
 
 ## Usage
 
-Append `?debug` to your front-end pages when logged in to initialize this devkit.
+Append `?debug` to your front-end pages when logged in to initialise this Devkit.
 
 ## Change Log
 

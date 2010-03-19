@@ -9,8 +9,8 @@
 		
 		public function about() {
 			return array(
-				'name'			=> 'Debug DevKit',
-				'version'		=> '1.0.8',
+				'name'			=> 'Debug Devkit',
+				'version'		=> '1.0.9',
 				'release-date'	=> '2010-03-19',
 				'author'		=> array(
 					'name'			=> 'Rowan Lewis',
@@ -39,16 +39,15 @@
 			if (false or isset($_GET['debug'])) {
 				require_once(EXTENSIONS . '/debugdevkit/content/content.debug.php');
 				
-				$context['devkit'] = new Content_DebugDevKit_Debug();
+				$context['devkit'] = new Content_DebugDevkit_Debug();
 				self::$active = true;
 			}
 			
-			else if (false and isset($_GET['debug-edit'])) {
-				require_once(EXTENSIONS . '/debugdevkit/content/content.debug.php');
-				require_once(EXTENSIONS . '/debugdevkit/content/content.edit.php');
+			// Capture debug information:
+			else if (isset($_GET['debug-capture'])) {
+				require_once(EXTENSIONS . '/debugdevkit/content/content.capture.php');
 				
-				$context['devkit'] = new Content_DebugDevKit_Edit();
-				self::$active = true;
+				$context['devkit'] = new Content_DebugDevkit_Capture();
 			}
 		}
 		

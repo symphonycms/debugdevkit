@@ -3,8 +3,8 @@
 A debug panel for Symphony.
 It is part of the Symphony core download package.
 
-- Version: 1.0.7
-- Date: **unreleased**
+- Version: 1.0.8
+- Date: 2010-03-19
 - Requirements: Symphony 2.0.4 or later
 - Author: Rowan Lewis, me@rowanlewis.com
 - GitHub Repository: <http://github.com/rowan-lewis/debugdevkit>

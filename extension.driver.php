@@ -10,12 +10,12 @@
 		public function about() {
 			return array(
 				'name'			=> 'Debug DevKit',
-				'version'		=> '1.0.7',
-				'release-date'	=> '2009-12-01',
+				'version'		=> '1.0.8',
+				'release-date'	=> '2010-03-19',
 				'author'		=> array(
 					'name'			=> 'Rowan Lewis',
-					'website'		=> 'http://pixelcarnage.com/',
-					'email'			=> 'rowan@pixelcarnage.com'
+					'website'		=> 'http://rowanlewis.com/',
+					'email'			=> 'me@rowanlewis.com'
 				)
 			);
 		}

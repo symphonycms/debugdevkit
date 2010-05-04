@@ -15,9 +15,13 @@
 	require_once(TOOLKIT . '/class.devkit.php');
 	require_once(EXTENSIONS . '/debugdevkit/lib/bitter/bitter.php');
 	
-	// Create cache folter:
-	if (!is_dir(BITTER_CACHE_PATH)) {
-		General::realiseDirectory(BITTER_CACHE_PATH);
+	// Create cache folder:
+	if (!is_dir(BITTER_CACHE_PATH) && General::realiseDirectory(BITTER_CACHE_PATH) === false){
+		throw new Exception(__('Failed to create cache folder. Please check "%s" is writable.', array(EXTENSIONS . '/debugdevkit/lib/bitter')));
+	}
+	
+	elseif(!is_writable(BITTER_CACHE_PATH)){
+		throw new Exception(__('Cache folder is not writable. Please check permissions on "%s".', array(EXTENSIONS . '/debugdevkit/lib/bitter')));
 	}
 	
 	class Content_DebugDevKit_Debug extends DevKit {

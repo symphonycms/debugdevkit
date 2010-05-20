@@ -9,7 +9,7 @@
 	}
 	
 	if (!defined('BITTER_CACHE_PATH')) {
-		define('BITTER_CACHE_PATH', EXTENSIONS . '/debugdevkit/lib/bitter/caches');
+		define('BITTER_CACHE_PATH', CACHE);
 	}
 	
 	require_once(TOOLKIT . '/class.devkit.php');

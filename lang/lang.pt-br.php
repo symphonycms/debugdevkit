@@ -4,10 +4,10 @@
 		'name' => 'Portuguese (Brazil)',
 		'author' => array(
 			'name' => 'Rainer Borene',
-			'email' => 'rainerborene@gmail.com',
-			'website' => false
+			'email' => 'me@rainerborene.com',
+			'website' => 'http://rainerborene.com'
 		),
-		'release-date' => '2009-10-08'
+		'release-date' => '2010-11-18'
 	);
 	
 	
@@ -19,16 +19,16 @@
 	$dictionary = array(
 
 		'Debug' => 
-		false,
+		'Depurar',
 
 		'Params' => 
-		false,
+		'Parâmetros',
 
 		'XML' => 
-		false,
+		'XML',
 
 		'Result' => 
-		false
+		'Resultado'
 		
 	);
 	

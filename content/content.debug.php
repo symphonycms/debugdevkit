@@ -184,6 +184,9 @@
 			
 			$utilities = null;
 			
+			// remove comments in XSL to prevent infinite recursion if an XSLT documents an include/import of itself!
+			$xsl = preg_replace('/<!--(.|\s)*?-->/', '', $xsl);
+			
 			if (preg_match_all('/<xsl:(import|include)\s*href="([^"]*)/i', $xsl, $matches)) {
 				$utilities = $matches[2];
 			}

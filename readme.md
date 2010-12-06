@@ -3,7 +3,7 @@
 A debug panel for Symphony.
 It is part of the Symphony core download package.
 
-- Version: 1.0.8
+- Version: 1.0.9
 - Date: 2010-03-19
 - Requirements: Symphony 2.0.4 or later
 - Author: Rowan Lewis, me@rowanlewis.com
@@ -11,9 +11,15 @@ It is part of the Symphony core download package.
 
 ## Usage
 
-Append `?debug` to your front-end pages when logged in to initialise this Devkit.
+Append `?debug` to your front-end pages when logged in to initialise this
+Devkit. Use `?debug-capture` to save a request for viewing with `?debug`
+later on.
 
 ## Change Log
+
+**Version 1.0.9**
+
+- Added the `?debug-capture` page to save the state of a request for further debugging.
 
 **Version 1.0.6**
 

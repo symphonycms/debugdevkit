@@ -56,9 +56,9 @@
 					
 					foreach ($characters as $character) {
 						if ($character == "\n") {
-							$this->endLine();
-							
 							foreach ($stack as $alt_token) $this->output .= '</span>';
+							
+							$this->endLine();
 						}
 						
 						$this->output .= $character;

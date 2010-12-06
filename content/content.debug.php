@@ -24,20 +24,49 @@
 		throw new Exception(__('Cache folder is not writable. Please check permissions on "%s".', array(EXTENSIONS . '/debugdevkit/lib/bitter')));
 	}
 	
-	class Content_DebugDevKit_Debug extends DevKit {
+	class Content_DebugDevkit_Debug extends DevKit {
 		protected $_view = '';
 		protected $_xsl = '';
 		protected $_full_utility_list = '';
+		protected $_using_capture = false;
 		
 		public function __construct(){
 			parent::__construct();
 			
 			$this->_title = __('Debug');
-			$this->_query_string = parent::__buildQueryString(array('symphony-page', 'debug'));
+			$this->_query_string = parent::__buildQueryString(array('symphony-page', 'debug', 'debug-capture'));
 			
 			if (!empty($this->_query_string)) {
 				$this->_query_string = '&amp;' . General::sanitize($this->_query_string);
 			}
+		}
+		
+		public function prepare($page, $pagedata, $xml, $param, $output) {
+			$unique_id = sprintf(
+				'symphony-debug-capture-for-author-%d',
+				Frontend::instance()->Author->get('id')
+			);
+			
+			if (isset($_SESSION[$unique_id])) {
+				if ($_GET['debug'] == 'reset') {
+					$length = strlen($this->_query_string);
+					$url = sprintf('%s%sdebug', $this->_query_string, ($length == 0 ? '?' : '&'));
+					
+					unset($_SESSION[$unique_id]);
+					redirect($url);
+				}
+				
+				else {
+					$this->_using_capture = true;
+					$data = $_SESSION[$unique_id];
+					
+					$xml = $data['xml'];
+					$param = $data['param'];
+					$output = $data['output'];
+				}
+			}
+			
+			parent::prepare($page, $pagedata, $xml, $param, $output);
 		}
 		
 		public function build() {
@@ -49,6 +78,14 @@
 		
 		protected function buildJump($wrapper) {
 			$list = new XMLElement('ul');
+			
+			if ($this->_using_capture) {
+				$list->appendChild($this->buildJumpItem(
+					__('Clear Capture'),
+					'?debug=reset' . $this->_query_string,
+					($this->_view == 'reset')
+				));
+			}
 			
 			$list->appendChild($this->buildJumpItem(
 				__('Params'),
@@ -95,14 +132,17 @@
 			
 			if ($this->_view == 'params') {
 				$wrapper->appendChild($this->__buildParams($this->_param));
-				
-			} else if ($this->_view == 'xml') {
+			}
+			
+			else if ($this->_view == 'xml') {
 				$this->appendSource($wrapper, $this->_xml, 'xml');
-				
-			} else if ($this->_view == 'result') {
+			}
+			
+			else if ($this->_view == 'result') {
 				$this->appendSource($wrapper, $this->_output, 'xml');
-				
-			} else {
+			}
+			
+			else {
 				if ($_GET['debug'] == basename($this->_pagedata['filelocation'])) {
 					$this->appendSource($wrapper, $this->_xsl, 'xsl');
 					

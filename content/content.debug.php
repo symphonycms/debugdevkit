@@ -17,11 +17,11 @@
 	
 	// Create cache folder:
 	if (!is_dir(BITTER_CACHE_PATH) && General::realiseDirectory(BITTER_CACHE_PATH) === false){
-		throw new Exception(__('Failed to create cache folder. Please check "%s" is writable.', array(EXTENSIONS . '/debugdevkit/lib/bitter')));
+		throw new Exception(__('Failed to create cache folder. Please check "%s" is writable.', array(BITTER_CACHE_PATH)));
 	}
 	
 	elseif(!is_writable(BITTER_CACHE_PATH)){
-		throw new Exception(__('Cache folder is not writable. Please check permissions on "%s".', array(EXTENSIONS . '/debugdevkit/lib/bitter')));
+		throw new Exception(__('Cache folder is not writable. Please check permissions on "%s".', array(BITTER_CACHE_PATH)));
 	}
 	
 	class Content_DebugDevkit_Debug extends DevKit {
@@ -223,6 +223,9 @@
 			if ($xsl == '') return;
 			
 			$utilities = null;
+			
+			// remove comments in XSL to prevent infinite recursion if an XSLT documents an include/import of itself!
+			$xsl = preg_replace('/<!--(.|\s)*?-->/', '', $xsl);
 			
 			if (preg_match_all('/<xsl:(import|include)\s*href="([^"]*)/i', $xsl, $matches)) {
 				$utilities = $matches[2];

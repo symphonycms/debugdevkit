@@ -184,7 +184,7 @@
 			
 			$utilities = null;
 			
-			if (preg_match_all('/<xsl:(import|include)\s*href="([^"]*)/i', $xsl, $matches)) {
+			if (preg_match_all('/<[^:]+:(import|include)\s*href="([^"]*)/i', $xsl, $matches)) {
 				$utilities = $matches[2];
 			}
 			

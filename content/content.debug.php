@@ -182,13 +182,15 @@
 		protected function __findUtilitiesInXSL($xsl) {
 			if ($xsl == '') return;
 
-			$utilities = null;
+			$utilities = array();
+			
+			$xsl = new SimpleXMLElement($xsl);
+			
+			$matches = $xsl->xpath("*[local-name()='import' or local-name()='include']");
 
-			// remove comments in XSL to prevent infinite recursion if an XSLT documents an include/import of itself!
-			$xsl = preg_replace('/<!--(.|\s)*?-->/', '', $xsl);
-
-			if (preg_match_all('/<[^:]+:(import|include)\s*href="([^"]*)/i', $xsl, $matches)) {
-				$utilities = $matches[2];
+			foreach($matches AS $match) {
+				$attributes = $match->attributes();
+				$utilities[] = $attributes["href"];
 			}
 
 			if (!is_array($this->_full_utility_list)) {

@@ -44,6 +44,14 @@
 	#input input {
 		background: transparent;
 		width: 100%;
+		padding: 4px;
+	}
+	#input input:hover {
+		background: hsl(210, 5%, 17%);
+	}
+	
+	#input input:focus {
+		background: hsl(210, 5%, 19%);
 	}
 	
 	#output {

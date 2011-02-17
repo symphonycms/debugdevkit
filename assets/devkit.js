@@ -529,7 +529,7 @@
 		};
 		
 		// Initialize on first focus:
-		input.bind('focus', function() {
+		input.focus().bind('focus', function() {
 			self.initialiseXPathMatcher();
 		});
 		

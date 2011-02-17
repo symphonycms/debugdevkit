@@ -70,7 +70,7 @@
 				($this->_view == $filename)
 			);
 
-			$utilities = $this->__buildUtilityList($this->__findUtilitiesInXSL($this->_xsl), 1, $this->_view);
+			$utilities = $this->__buildUtilityList($this->__findUtilitiesInFile($this->_pagedata['filelocation']), 1, $this->_view);
 
 			if (is_object($utilities)) {
 				$item->appendChild($utilities);
@@ -165,9 +165,7 @@
 					"?debug-edit={$u}" . $this->_query_string
 				);
 
-				$child_utilities = $this->__findUtilitiesInXSL(
-					@file_get_contents(UTILITIES . '/' . $filename)
-				);
+				$child_utilities = $this->__findUtilitiesInFile($u);
 
 				if (is_array($child_utilities) && !empty($child_utilities)) {
 					$item->appendChild($this->__buildUtilityList($child_utilities, $level + 1, $view));
@@ -179,7 +177,9 @@
 			return $list;
 		}
 
-		protected function __findUtilitiesInXSL($xsl) {
+		protected function __findUtilitiesInFile($filename) {
+			$xsl = @file_get_contents($filename);
+			
 			if ($xsl == '') return;
 
 			$utilities = array();
@@ -190,7 +190,7 @@
 
 			foreach($matches AS $match) {
 				$attributes = $match->attributes();
-				$utilities[] = $attributes["href"];
+				$utilities[] = realpath(dirname($filename) . "/" . $attributes["href"]);
 			}
 
 			if (!is_array($this->_full_utility_list)) {

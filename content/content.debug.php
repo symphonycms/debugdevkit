@@ -26,7 +26,6 @@
 
 	class Content_DebugDevKit_Debug extends DevKit {
 		protected $_view = '';
-		protected $_xsl = '';
 		protected $_full_utility_list = '';
 
 		public function __construct(){
@@ -42,7 +41,6 @@
 
 		public function build() {
 			$this->_view = (strlen(trim($_GET['debug'])) == 0 ? 'xml' : $_GET['debug']);
-			$this->_xsl = @file_get_contents($this->_pagedata['filelocation']);
 
 			return parent::build();
 		}
@@ -104,7 +102,7 @@
 
 			} else {
 				if ($_GET['debug'] == $this->__relativePath($this->_pagedata['filelocation'])) {
-					$this->appendSource($wrapper, $this->_xsl, 'xsl');
+					$this->appendSource($wrapper, @file_get_contents($this->_pagedata['filelocation']), 'xsl');
 
 				} else if (is_array($this->_full_utility_list) && !empty($this->_full_utility_list)) {
 					foreach ($this->_full_utility_list as $u) {

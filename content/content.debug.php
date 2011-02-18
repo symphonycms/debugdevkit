@@ -203,7 +203,7 @@
 		}
 		
 		private function __relativePath($filename) {
-			return str_replace(WORKSPACE . '/','',$filename);
+			return str_replace(DOCROOT . '/','',$filename);
 		}
 	}
 

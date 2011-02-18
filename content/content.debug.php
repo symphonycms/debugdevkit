@@ -62,10 +62,10 @@
 				($this->_view == 'xml')
 			));
 
-			$filename = basename($this->_pagedata['filelocation']);
+			$filename = $this->__relativePath($this->_pagedata['filelocation']);
 
 			$item = $this->buildJumpItem(
-				$filename,
+				basename($filename),
 				"?debug={$filename}" . $this->_query_string,
 				($this->_view == $filename)
 			);
@@ -103,17 +103,15 @@
 				$this->appendSource($wrapper, $this->_output, 'xml');
 
 			} else {
-				if ($_GET['debug'] == basename($this->_pagedata['filelocation'])) {
+				if ($_GET['debug'] == $this->__relativePath($this->_pagedata['filelocation'])) {
 					$this->appendSource($wrapper, $this->_xsl, 'xsl');
 
-				} else if ($_GET['debug']{0} == 'u') {
-					if (is_array($this->_full_utility_list) && !empty($this->_full_utility_list)) {
-						foreach ($this->_full_utility_list as $u) {
-							if ($_GET['debug'] != 'u-'.basename($u)) continue;
+				} else if (is_array($this->_full_utility_list) && !empty($this->_full_utility_list)) {
+					foreach ($this->_full_utility_list as $u) {
+						if ($_GET['debug'] != $this->__relativePath($u)) continue;
 
-							$this->appendSource($wrapper, @file_get_contents(UTILITIES . '/' . basename($u)), 'xsl');
-							break;
-						}
+						$this->appendSource($wrapper, @file_get_contents($u), 'xsl');
+						break;
 					}
 				}
 			}
@@ -157,11 +155,11 @@
 			$list = new XMLElement('ul');
 
 			foreach ($utilities as $u) {
-				$filename = basename($u);
+				$filename = $this->__relativePath($u);
 				$item = $this->buildJumpItem(
-					$filename,
-					"?debug=u-{$filename}" . $this->_query_string,
-					($view == "u-{$filename}"),
+					basename($filename),
+					"?debug={$filename}" . $this->_query_string,
+					($view == "{$filename}"),
 					"?debug-edit={$u}" . $this->_query_string
 				);
 
@@ -202,6 +200,10 @@
 			}
 
 			return $utilities;
+		}
+		
+		private function __relativePath($filename) {
+			return str_replace(WORKSPACE . '/','',$filename);
 		}
 	}
 

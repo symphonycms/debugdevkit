@@ -206,7 +206,8 @@
 		}
 		
 		private function __relativePath($filename) {
-			return str_replace(DOCROOT . '/','',$filename);
+			// remove path to DOCROOT from absolute path. the realpath mess is necessary to cope with Windows paths (realpath always returns C:\Programs\... instead of /Programs/...)
+			return str_replace('\\','/',str_replace(realpath(DOCROOT),'',realpath($filename)));
 		}
 	}
 

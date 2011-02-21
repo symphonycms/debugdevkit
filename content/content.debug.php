@@ -180,7 +180,12 @@
 
 			$utilities = array();
 			
-			$xsl = new SimpleXMLElement($xsl);
+			try {
+				$xsl = @new SimpleXMLElement($xsl);
+			}
+			catch(Exception $e) { // simply abort recursion in this branch if XSL file contains invalid XML
+				return $utilities;
+			}
 			
 			$matches = $xsl->xpath("*[local-name()='import' or local-name()='include']");
 

@@ -196,7 +196,8 @@
 
 			foreach($matches AS $match) {
 				$attributes = $match->attributes();
-				$utilities[] = realpath(dirname($filename) . "/" . $attributes["href"]);
+				if($attributes["href"] != basename($filename))
+					$utilities[] = realpath(dirname($filename) . "/" . $attributes["href"]);
 			}
 
 			if (!is_array($this->_full_utility_list)) {

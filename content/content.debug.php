@@ -174,7 +174,12 @@
 		}
 
 		protected function __findUtilitiesInFile($filename) {
-			$xsl = @file_get_contents($filename);
+			try {
+				$xsl = @file_get_contents($filename);
+			}
+			catch(Exception $e) {
+				return;
+			}
 			
 			if ($xsl == '') return;
 

@@ -196,7 +196,7 @@
 
 			foreach($matches AS $match) {
 				$attributes = $match->attributes();
-				if($attributes["href"] != basename($filename))
+				if($attributes["href"] != basename($filename) && file_exists(realpath(dirname($filename) . "/" . $attributes["href"])))
 					$utilities[] = realpath(dirname($filename) . "/" . $attributes["href"]);
 			}
 

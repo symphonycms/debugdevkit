@@ -2,7 +2,7 @@
 /*----------------------------------------------------------------------------*/
 	
 	class BitterFormatSymphony extends BitterFormat {
-		protected $tabsize = 4;
+		protected $tabsize = 2;
 		protected $line = 1;
 		protected $output = '';
 		
@@ -19,17 +19,15 @@
 		}
 		
 		protected function processTabs() {
-			if (!function_exists('__expander')) eval("
-				function __expander(\$matches) {
-					return \$matches[1] . str_repeat(
-						' ', strlen(\$matches[2]) * {$this->tabsize} - (strlen(\$matches[1]) % {$this->tabsize})
-					);
-				}
-			");
-			
 			while (strstr($this->output, "\t")) {
-				$this->output = preg_replace_callback('%^([^\t\n]*)(\t+)%m', '__expander', $this->output);
+				$this->output = preg_replace_callback('%^([^\t]*)(\t+)%m', array($this, 'processTabsLine'), $this->output);
 			}
+		}
+		
+		protected function processTabsLine($matches) {
+			return $matches[1] . str_repeat(
+				' ', strlen($matches[2]) * $this->tabsize - (strlen($matches[1]) % $this->tabsize)
+			);
 		}
 		
 		protected function processLines() {

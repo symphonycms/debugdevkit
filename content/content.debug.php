@@ -104,7 +104,8 @@
 				if ($_GET['debug'] == $this->__relativePath($this->_pagedata['filelocation'])) {
 					$this->appendSource($wrapper, @file_get_contents($this->_pagedata['filelocation']), 'xsl');
 
-				} else if (is_array($this->_full_utility_list) && !empty($this->_full_utility_list)) {
+				}
+				else if (is_array($this->_full_utility_list) && !empty($this->_full_utility_list)) {
 					foreach ($this->_full_utility_list as $u) {
 						if ($_GET['debug'] != $this->__relativePath($u)) continue;
 
@@ -130,6 +131,7 @@
 
 		protected function __buildParams($params) {
 			if (!is_array($params) || empty($params)) return;
+			$params = array_map(array('General', 'sanitize'), $params);
 
 			$wrapper = new XMLElement('div');
 			$wrapper->setAttribute('id', 'params');
@@ -174,24 +176,21 @@
 		}
 
 		protected function __findUtilitiesInFile($filename) {
-			try {
-				$xsl = @file_get_contents($filename);
+			if(file_exists($filename) && is_readable($filename)) {
+				$xsl = file_get_contents($filename);
 			}
-			catch(Exception $e) {
-				return;
-			}
-			
+
 			if ($xsl == '') return;
 
 			$utilities = array();
-			
+
 			try {
 				$xsl = @new SimpleXMLElement($xsl);
 			}
 			catch(Exception $e) { // simply abort recursion in this branch if XSL file contains invalid XML
 				return $utilities;
 			}
-			
+
 			$matches = $xsl->xpath("*[local-name()='import' or local-name()='include']");
 
 			foreach($matches AS $match) {
@@ -210,7 +209,7 @@
 
 			return $utilities;
 		}
-		
+
 		private function __relativePath($filename) {
 			// remove path to DOCROOT from absolute path. the realpath mess is necessary to cope with Windows paths (realpath always returns C:\Programs\... instead of /Programs/...)
 			return str_replace('\\','/',str_replace(realpath(DOCROOT),'',realpath($filename)));

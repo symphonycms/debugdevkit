@@ -20,7 +20,7 @@
 		
 		protected function processTabs() {
 			while (strstr($this->output, "\t")) {
-				$this->output = preg_replace_callback('%^([^\t]*)(\t+)%m', array($this, 'processTabsLine'), $this->output);
+				$this->output = preg_replace_callback('%^([^\t]*)(\t+)%', array($this, 'processTabsLine'), $this->output);
 			}
 		}
 		

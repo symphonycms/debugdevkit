@@ -11,7 +11,7 @@
 			return array(
 				'name'			=> 'Debug DevKit',
 				'version'		=> '1.2',
-				'release-date'	=> '2011-05-20',
+				'release-date'	=> '2011-06-14',
 				'author'		=> array(
 					'name'			=> 'Rowan Lewis',
 					'website'		=> 'http://rowanlewis.com/',

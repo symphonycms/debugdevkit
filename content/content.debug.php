@@ -131,13 +131,15 @@
 
 		protected function __buildParams($params) {
 			if (!is_array($params) || empty($params)) return;
-			$params = array_map(array('General', 'sanitize'), $params);
+			$params = General::array_map_recursive(array('General', 'sanitize'), $params);
 
 			$wrapper = new XMLElement('div');
 			$wrapper->setAttribute('id', 'params');
 			$table = new XMLElement('table');
 
 			foreach ($params as $key => $value) {
+				$value = is_array($value) ? implode(', ', $value) : $value;
+
 				$row = new XMLElement('tr');
 				$row->appendChild(new XMLElement('th', "\${$key}"));
 				$row->appendChild(new XMLElement('td', "'{$value}'"));

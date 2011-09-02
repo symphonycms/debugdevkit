@@ -125,8 +125,11 @@
 				'div', $bitter->process($source)
 			);
 			$inner->setAttribute('id', 'source');
-
 			$wrapper->appendChild($inner);
+
+			$viewXML = new XMLElement('div',null,array('id'=>'type','class'=>'raw'));
+			$viewXML->appendChild(new XMLElement('span',__('View as XML')));
+			$wrapper->appendChild($viewXML);
 		}
 
 		protected function __buildParams($params) {

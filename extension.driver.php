@@ -42,6 +42,12 @@
 				$context['devkit'] = new Content_DebugDevKit_Debug();
 				self::$active = true;
 			}
+			if (false or isset($_GET['xml'])) {
+				require_once(EXTENSIONS . '/debugdevkit/content/content.xml.php');
+
+				$context['devkit'] = new Content_DebugDevKit_XML();
+				self::$active = true;
+			}
 		}
 
 		public function manipulateDevKitNavigation($context) {

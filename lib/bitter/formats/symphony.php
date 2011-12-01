@@ -26,7 +26,7 @@
 		
 		protected function processTabsLine($matches) {
 			return $matches[1] . str_repeat(
-				' ', strlen($matches[2]) * $this->tabsize - (strlen($matches[1]) % $this->tabsize)
+				' ', strlen($matches[2]) * $this->tabsize
 			);
 		}
 		

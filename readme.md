@@ -12,13 +12,3 @@ It is part of the Symphony core download package.
 ## Usage
 
 Append `?debug` to your front-end pages when logged in to initialise this Devkit.
-
-## Change Log
-
-**Version 1.0.6**
-
-- Added localisation files for Dutch, German, Portuguese (Brazil) and Russian
-
-**Version 1.0**
-
-- Initial release

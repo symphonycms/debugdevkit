@@ -100,6 +100,11 @@
 			} else if ($this->_view == 'result') {
 				$this->appendSource($wrapper, $this->_output, 'xml');
 
+			} else if ($this->_view == 'raw') {
+				header('Content-Type: application/xml');
+				echo $this->_xml;
+				die();
+				
 			} else {
 				if ($_GET['debug'] == $this->__relativePath($this->_pagedata['filelocation'])) {
 					$this->appendSource($wrapper, @file_get_contents($this->_pagedata['filelocation']), 'xsl');
@@ -127,9 +132,12 @@
 			$inner->setAttribute('id', 'source');
 			$wrapper->appendChild($inner);
 
-			$viewXML = new XMLElement('div',null,array('id'=>'type','class'=>'raw'));
-			$viewXML->appendChild(new XMLElement('span',__('View as XML')));
-			$wrapper->appendChild($viewXML);
+			if($this->_view == 'xml') {
+				$viewRaw = Widget::Anchor('','?debug=raw');
+				$viewRaw->setAttribute('id', 'type');
+				$viewRaw->appendChild(new XMLElement('span',__('Plain XML')));
+				$wrapper->appendChild($viewRaw);
+			}
 		}
 
 		protected function __buildParams($params) {

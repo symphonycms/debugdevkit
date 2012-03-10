@@ -557,7 +557,7 @@
 
 		source.bind('sessionupdate', self.refresh);
 	};
-
+	
 /*---------------------------------------------------------------------------*/
 
 	jQuery(document).ready(function() {

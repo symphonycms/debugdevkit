@@ -100,6 +100,11 @@
 			} else if ($this->_view == 'result') {
 				$this->appendSource($wrapper, $this->_output, 'xml');
 
+			} else if ($this->_view == 'raw') {
+				header('Content-Type: application/xml');
+				echo $this->_xml;
+				die();
+				
 			} else {
 				if ($_GET['debug'] == $this->__relativePath($this->_pagedata['filelocation'])) {
 					$this->appendSource($wrapper, @file_get_contents($this->_pagedata['filelocation']), 'xsl');
@@ -125,19 +130,27 @@
 				'div', $bitter->process($source)
 			);
 			$inner->setAttribute('id', 'source');
-
 			$wrapper->appendChild($inner);
+
+			if($this->_view == 'xml') {
+				$viewRaw = Widget::Anchor('','?debug=raw');
+				$viewRaw->setAttribute('id', 'type');
+				$viewRaw->appendChild(new XMLElement('span',__('Plain XML')));
+				$wrapper->appendChild($viewRaw);
+			}
 		}
 
 		protected function __buildParams($params) {
 			if (!is_array($params) || empty($params)) return;
-			$params = array_map(array('General', 'sanitize'), $params);
+			$params = General::array_map_recursive(array('General', 'sanitize'), $params);
 
 			$wrapper = new XMLElement('div');
 			$wrapper->setAttribute('id', 'params');
 			$table = new XMLElement('table');
 
 			foreach ($params as $key => $value) {
+				$value = is_array($value) ? implode(', ', $value) : $value;
+
 				$row = new XMLElement('tr');
 				$row->appendChild(new XMLElement('th', "\${$key}"));
 				$row->appendChild(new XMLElement('td', "'{$value}'"));

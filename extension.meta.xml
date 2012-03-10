@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension id="debugdevkit" status="released" xmlns="http://symphony-cms.com/schemas/extension/1.0">
+	<name>Debug Devkit</name>
+	<description>A debug panel for Symphony.</description>
+	<repo type="github">https://github.com/symphonycms/debugdevkit</repo>
+	<types>
+		<type>Workflow</type>
+	</types>
+	<authors>
+		<author>
+			<name github="team" symphony="symphonycms">Symphony Team</name>
+			<website>http://www.symphony-cms.com</website>
+		</author>
+	</authors>
+	<releases>
+		<release version="1.2.1" date="2011-07-03" min="2.2" max="2.2.x">
+			- Adding arrays to the param pool no longer breaks debug view
+		</release>
+	</releases>
+</extension>

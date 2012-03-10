@@ -10,8 +10,8 @@
 		public function about() {
 			return array(
 				'name'			=> 'Debug DevKit',
-				'version'		=> '1.2',
-				'release-date'	=> '2011-06-14',
+				'version'		=> '1.2.1',
+				'release-date'	=> '2011-07-03',
 				'author'		=> array(
 					'name'			=> 'Rowan Lewis',
 					'website'		=> 'http://rowanlewis.com/',
@@ -40,6 +40,12 @@
 				require_once(EXTENSIONS . '/debugdevkit/content/content.debug.php');
 
 				$context['devkit'] = new Content_DebugDevKit_Debug();
+				self::$active = true;
+			}
+			if (false or isset($_GET['xml'])) {
+				require_once(EXTENSIONS . '/debugdevkit/content/content.xml.php');
+
+				$context['devkit'] = new Content_DebugDevKit_XML();
 				self::$active = true;
 			}
 		}

@@ -558,6 +558,20 @@
 		source.bind('sessionupdate', self.refresh);
 	};
 
+/*-----------------------------------------------------------------------------
+	Type Viewer:
+-----------------------------------------------------------------------------*/
+	
+	function TypeViewer(raw, source, session) {
+		var typeSelect = jQuery('#type');
+		typeSelect.bind('click',function() {
+			var currentLink = $('#jump ul li a.active').attr('href');
+			if(currentLink) {
+				window.location.href= currentLink.replace('?debug','?xml');
+			}
+		});
+	}
+	
 /*---------------------------------------------------------------------------*/
 
 	jQuery(document).ready(function() {
@@ -569,6 +583,7 @@
 			TagMatcher(source, session);
 			XPathMatcher(source, session);
 			LineHighlighter(source, session);
+			TypeViewer(source, session);
 
 			session.refresh();
 		}

@@ -86,10 +86,10 @@
 		}
 
 		public function buildContent($wrapper) {
-			$this->addStylesheetToHead(URL . '/extensions/debugdevkit/assets/devkit.css', 'screen', 9126343);
-			$this->addScriptToHead(URL . '/symphony/assets/jquery.js', 9126342);
-			$this->addScriptToHead(URL . '/extensions/debugdevkit/assets/jquery.scrollto.js', 9126344);
-			$this->addScriptToHead(URL . '/extensions/debugdevkit/assets/devkit.js', 9126344);
+			$this->addStylesheetToHead(URL . '/extensions/debugdevkit/assets/devkit.css', 'screen', 10);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/jquery.js', 20);
+			$this->addScriptToHead(URL . '/extensions/debugdevkit/assets/jquery.scrollto.js', 30);
+			$this->addScriptToHead(URL . '/extensions/debugdevkit/assets/devkit.js', 40);
 
 			if ($this->_view == 'params') {
 				$wrapper->appendChild($this->__buildParams($this->_param));
@@ -104,7 +104,7 @@
 				header('Content-Type: application/xml');
 				echo $this->_xml;
 				die();
-				
+
 			} else {
 				if ($_GET['debug'] == $this->__relativePath($this->_pagedata['filelocation'])) {
 					$this->appendSource($wrapper, @file_get_contents($this->_pagedata['filelocation']), 'xsl');
@@ -229,4 +229,3 @@
 		}
 	}
 
-?>

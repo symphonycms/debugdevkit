@@ -11,8 +11,18 @@
 			<name github="team" symphony="symphonycms">Symphony Team</name>
 			<website>http://www.symphony-cms.com</website>
 		</author>
+		<author>
+			<name github="rowan-lewis" symphony="buzzomatic">Rowan Lewis</name>
+			<website>http://rowanlewis.com/</website>
+		</author>
 	</authors>
 	<releases>
+		<release version="1.2.2" date="2012-05-21" min="2.2">
+			- Add `?debug=raw` mode that outputs the page XML as raw XML
+			- Fix indentation issues
+			- Minor tweaks to CSS for better consistency
+			- Update path to use `SYPMHONY_URL` constant
+		</release>
 		<release version="1.2.1" date="2011-07-03" min="2.2">
 			- Adding arrays to the param pool no longer breaks debug view
 		</release>

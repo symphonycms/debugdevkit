@@ -1,7 +1,7 @@
 <?php
 /*----------------------------------------------------------------------------*/
 	
-	class BitterFormatSymphony extends BitterFormat {
+	class BitterFormatDefault extends BitterFormat {
 		protected $tabsize = 4;
 		protected $line = 1;
 		protected $output = '';
@@ -19,15 +19,17 @@
 		}
 		
 		protected function processTabs() {
+			if (!function_exists('__expander')) eval("
+				function __expander(\$matches) {
+					return \$matches[1] . str_repeat(
+						' ', strlen(\$matches[2]) * {$this->tabsize} - (strlen(\$matches[1]) % {$this->tabsize})
+					);
+				}
+			");
+			
 			while (strstr($this->output, "\t")) {
-				$this->output = preg_replace_callback('%^([^\t]*)(\t+)%', array($this, 'processTabsLine'), $this->output);
+				$this->output = preg_replace_callback('%^([^\t\n]*)(\t+)%m', '__expander', $this->output);
 			}
-		}
-		
-		protected function processTabsLine($matches) {
-			return $matches[1] . str_repeat(
-				' ', strlen($matches[2]) * $this->tabsize
-			);
 		}
 		
 		protected function processLines() {
@@ -74,21 +76,18 @@
 		}
 		
 		protected function startLine() {
-			$this->output .= "<line id=\"{$this->line}\">";
-			$this->output .= "<marker></marker>";
-			$this->output .= "<content>";
+			$this->output .= "<code class=\"line line-{$this->line}\">";
 		}
 		
 		protected function endLine() {
 			$this->line++;
-			$this->output .= '</content>';
-			$this->output .= '</line>';
+			$this->output .= '</code>';
 		}
 	}
 	
 /*----------------------------------------------------------------------------*/
 	
-	return new BitterFormatSymphony();
+	return new BitterFormatDefault();
 	
 /*----------------------------------------------------------------------------*/
 ?>

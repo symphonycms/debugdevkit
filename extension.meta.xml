@@ -17,6 +17,11 @@
 		</author>
 	</authors>
 	<releases>
+		<release version="1.2.3" date="2013-02-22" min="2.2" max="2.3.x">
+			- Update Bitter library for improving syntax highlighting
+			- Add Italian language
+			- Add Russian language
+		</release>
 		<release version="1.2.2" date="2012-05-21" min="2.2" max="2.3.x">
 			- Add `?debug=raw` mode that outputs the page XML as raw XML
 			- Fix indentation issues

@@ -17,7 +17,7 @@
 		</author>
 	</authors>
 	<releases>
-		<release version="1.2.4" data="2013-07-01" min="2.3">
+		<release version="1.2.4" date="2013-07-01" min="2.3">
 			- Update links to **getsymphony.com**
 		</release>
 		<release version="1.2.3" date="2013-02-22" min="2.2" max="2.3.x">

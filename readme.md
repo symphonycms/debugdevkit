@@ -3,8 +3,8 @@
 A debug panel for Symphony.
 It is part of the Symphony core download package.
 
-- Version: 1.2.3
-- Date: 22nd February 2013
+- Version: 1.3
+- Date: unreleased
 - Requirements: Symphony 2.2 or later
 - Author: Rowan Lewis, Symphony Team
 

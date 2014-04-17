@@ -17,6 +17,9 @@
 		</author>
 	</authors>
 	<releases>
+		<release version="1.3" date="2013-02-22" min="2.4">
+			- Updates for Symphony 2.4
+		</release>
 		<release version="1.2.4" date="2013-07-01" min="2.3">
 			- Update links to **getsymphony.com**
 		</release>

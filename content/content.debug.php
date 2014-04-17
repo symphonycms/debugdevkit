@@ -87,7 +87,7 @@
 
 		public function buildContent(XMLElement $wrapper) {
 			$this->addStylesheetToHead(URL . '/extensions/debugdevkit/assets/devkit.css', 'screen', 10);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/jquery.js', 20);
+			$this->addScriptToHead(APPLICATION_URL . '/assets/js/lib/jquery.js', 20);
 			$this->addScriptToHead(URL . '/extensions/debugdevkit/assets/jquery.scrollto.js', 30);
 			$this->addScriptToHead(URL . '/extensions/debugdevkit/assets/devkit.js', 40);
 

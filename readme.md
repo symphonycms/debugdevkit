@@ -2,10 +2,6 @@
 
 The Debug Devkit allows a developer to preview the XML of a Frontend page. It also includes the page parameters, included XSL templates and provides a navigation for other Devkit extensions (such as the Profile Devkit)
 
-- Version: 1.3.1
-- Date: August 4th, 2014
-- Requirements: Symphony 2.4+
-
 ## Usage
 
 Append `?debug` to your front-end pages when logged in to initialise this Devkit. The Debug Devkit responds to the following URL's:

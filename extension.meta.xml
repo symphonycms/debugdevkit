@@ -9,7 +9,7 @@
 	<authors>
 		<author>
 			<name github="team" symphony="symphonycms">Symphony Team</name>
-			<website>http://www.getsymphony.com</website>
+			<website>https://www.getsymphony.com</website>
 		</author>
 		<author>
 			<name github="rowan-lewis" symphony="buzzomatic">Rowan Lewis</name>
@@ -17,6 +17,9 @@
 		</author>
 	</authors>
 	<releases>
+		<release version="1.3.4" date="2017-06-20" min="2.4" max="2.x.x">
+			- Mark compatibility with Symphony 2.7
+		</release>
 		<release version="1.3.3" date="2015-03-11" min="2.4" max="2.6.x">
 			- Mark compatibility with Symphony 2.6+
 		</release>
